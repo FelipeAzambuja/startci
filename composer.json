@@ -1,0 +1,6 @@
+{
+    "require": {
+        "tightenco/collect": "^6.17",
+        "danielstjules/stringy": "^3.1"
+    }
+}
