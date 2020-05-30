@@ -53,7 +53,8 @@ function table(string $name, $db = null): \CodeIgniter\Database\BaseBuilder {
     return db_connect($db)->table($name);
 }
 
-function create_table(string $table, array $fields, string $db = null): void {
+function create_table(string $table, array $fields, string $db = null): void
+{
     $forge = Database::forge($db);
     $forge->addField('id');
     foreach ($fields as $k => $field) {
@@ -67,11 +68,19 @@ function create_table(string $table, array $fields, string $db = null): void {
             $forge->addKey($k);
             $forge->addForeignKey($k, $field[0], $field[1]);
         } else {
-            $forge->addField([
-                $k => [
-                    'type' => $field
-                ]
-            ]);
+            if (is_numeric($k)) {
+                $forge->addField([
+                    $field => [
+                        'type' => 'text'
+                    ]
+                ]);
+            } else {
+                $forge->addField([
+                    $k => [
+                        'type' => $field
+                    ]
+                ]);
+            }
         }
     }
     $forge->addField('created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
