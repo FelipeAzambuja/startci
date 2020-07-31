@@ -60,7 +60,7 @@ class Controller
 	 *
 	 * @var array
 	 */
-	protected $helpers = [];
+	protected $helpers = ['minifier'];
 
 	//--------------------------------------------------------------------
 

@@ -103,24 +103,8 @@ function form_error($field, $template = 'single') {
     echo valid()->showError($field, $template);
 }
 
-/**
- * 
- * @return \Clientes
- */
-function model_clientes() {
-    return new Clientes();
-}
-
-/**
- * 
- * @return \Usuarios
- */
-function model_usuarios() {
-    return new Usuarios();
-}
-
-function user() {
-    return table('usuarios')->where('id', session()->get('id'))->get()->getFirstRow();
+function user($table='users') {
+    return table($table)->where('id', session()->get('id'))->get()->getFirstRow();
 }
 
 
@@ -129,7 +113,7 @@ function user() {
  * @param string $data
  * @return string|boolean
  */
-function excel_data($data, $format = 'd/m/Y', $erro = false) {
+function excel_date($data, $format = 'd/m/Y', $erro = false) {
     if (!$format) {
         $format = 'd/m/Y';
     }
@@ -171,4 +155,12 @@ function carbon(string $data = null): \Carbon\Carbon {
 
 function is_date($format, $date) {
     return (DateTime::createFromFormat($format, $date)) !== false;
+}
+
+function row_default($table, $values = [], $db = null) {
+    $v = [];
+    foreach (db_connect($db)->getFieldNames($table) as $key => $value) {
+        $v[$value] = (!isset($values[$value])) ? null : $values[$value];
+    }
+    return (object)$v;
 }

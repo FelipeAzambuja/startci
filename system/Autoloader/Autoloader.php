@@ -210,7 +210,7 @@ class Autoloader
 	 *
 	 * If a prefix param is set, returns only paths to the given prefix.
 	 *
-	 * @var string|null $prefix
+	 * @param string|null $prefix
 	 *
 	 * @return array
 	 */
@@ -280,6 +280,15 @@ class Autoloader
 	{
 		if (strpos($class, '\\') === false)
 		{
+			$class    = 'Config\\' . $class;
+			$filePath = APPPATH . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+			$filename = $this->requireFile($filePath);
+
+			if ($filename)
+			{
+				return $filename;
+			}
+
 			return false;
 		}
 
@@ -287,12 +296,11 @@ class Autoloader
 		{
 			foreach ($directories as $directory)
 			{
-				$directory = rtrim($directory, '/');
+				$directory = rtrim($directory, '\\/');
 
 				if (strpos($class, $namespace) === 0)
 				{
-					$filePath = $directory . str_replace('\\', '/',
-							substr($class, strlen($namespace))) . '.php';
+					$filePath = $directory . str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($namespace))) . '.php';
 					$filename = $this->requireFile($filePath);
 
 					if ($filename)
@@ -333,7 +341,7 @@ class Autoloader
 			APPPATH . 'Models/',
 		];
 
-		$class = str_replace('\\', '/', $class) . '.php';
+		$class = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
 		foreach ($paths as $path)
 		{

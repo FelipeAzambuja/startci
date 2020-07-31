@@ -310,7 +310,18 @@ if (! function_exists('form_textarea'))
 			unset($data['value']); // textareas don't use the value attribute
 		}
 
-		return '<textarea ' . parse_form_attributes($data, $defaults) . stringify_attributes($extra) . '>'
+		// Unsets default rows and cols if defined in extra field as array or string.
+		if ((is_array($extra) && array_key_exists('rows', $extra)) || (is_string($extra) && strpos(strtolower(preg_replace('/\s+/', '', $extra)), 'rows=') !== false))
+		{
+			unset($defaults['rows']);
+		}
+
+		if ((is_array($extra) && array_key_exists('cols', $extra)) || (is_string($extra) && strpos(strtolower(preg_replace('/\s+/', '', $extra)), 'cols=') !== false))
+		{
+			unset($defaults['cols']);
+		}
+
+		return '<textarea ' . rtrim(parse_form_attributes($data, $defaults)) . stringify_attributes($extra) . '>'
 				. htmlspecialchars($val)
 				. "</textarea>\n";
 	}
@@ -843,7 +854,7 @@ if (! function_exists('set_checkbox'))
 		}
 
 		// Unchecked checkbox and radio inputs are not even submitted by browsers ...
-		if (intval($input) === 0 || ! empty($request->getPost()) || ! empty(old($field)))
+		if ((string) $input === '0' || ! empty($request->getPost()) || ! empty(old($field)))
 		{
 			return ($input === $value) ? ' checked="checked"' : '';
 		}
@@ -895,7 +906,7 @@ if (! function_exists('set_radio'))
 
 		// Unchecked checkbox and radio inputs are not even submitted by browsers ...
 		$result = '';
-		if (intval($input) === 0 || ! empty($input = $request->getPost($field)) || ! empty($input = old($field)))
+		if ((string) $input === '0' || ! empty($input = $request->getPost($field)) || ! empty($input = old($field)))
 		{
 			$result = ($input === $value) ? ' checked="checked"' : '';
 		}
