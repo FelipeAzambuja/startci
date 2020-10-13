@@ -56,36 +56,89 @@ function table(string $name, $db = null): \CodeIgniter\Database\BaseBuilder {
 function create_table(string $table, array $fields, string $db = null): void
 {
     $forge = Database::forge($db);
-    $forge->addField('id');
-    foreach ($fields as $k => $field) {
-        if (strpos($field, '.')) {
-            $forge->addField([
-                $k => [
-                    'type' => 'INT'
-                ]
-            ]);
-            $field = explode('.', $field);
-            $forge->addKey($k);
-            $forge->addForeignKey($k, $field[0], $field[1]);
-        } else {
+    $db = db_connect($db);
+    $tables = $db->listTables();
+    if (in_array($table, $tables)) {
+        $field_names = $db->getFieldNames($table);
+        foreach ($fields as $k => $field) {
             if (is_numeric($k)) {
-                $forge->addField([
-                    $field => [
-                        'type' => 'text'
-                    ]
-                ]);
+                $key_name = $field;
             } else {
-                $forge->addField([
-                    $k => [
-                        'type' => $field
-                    ]
-                ]);
+                $key_name = $k;
+            }
+            if (!in_array($key_name, $field_names)) {
+                if (strpos($field, '.') !== false) {
+                    $forge->addField([
+                        $key_name => [
+                            'type' => 'INT',
+                            'null' => true
+                        ]
+                    ]);
+                    $field = explode('.', $field);
+                    $forge->addKey($key_name);
+                    $forge->addForeignKey($key_name, $field[0], $field[1]);
+
+                    $forge->addColumn($table, [
+                        $key_name => [
+                            'type' => 'INT',
+                            'null' => true
+                        ]
+                    ]);
+                } else {
+                    if (is_numeric($k)) {
+                        $forge->addColumn($table, [
+                            $key_name => [
+                                'type' => 'text',
+                                'null' => true
+                            ]
+                        ]);
+                    } else {
+                        $forge->addColumn($table, [
+                            $key_name => [
+                                'type' => $field,
+                                'null' => true
+                            ]
+                        ]);
+                    }
+                }
             }
         }
+    } else {
+        $forge->addField('id');
+        foreach ($fields as $k => $field) {
+            if (strpos($field, '.')) {
+                $forge->addField([
+                    $k => [
+                        'type' => 'INT',
+                        'null' => true
+                    ]
+                ]);
+                $field = explode('.', $field);
+                $forge->addKey($k);
+                $forge->addForeignKey($k, $field[0], $field[1]);
+            } else {
+
+                if (is_numeric($k)) {
+                    $forge->addField([
+                        $field => [
+                            'type' => 'text',
+                            'null' => true
+                        ]
+                    ]);
+                } else {
+                    $forge->addField([
+                        $k => [
+                            'type' => $field,
+                            'null' => true
+                        ]
+                    ]);
+                }
+            }
+        }
+        $forge->addField('created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+        $forge->addField('updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        $forge->createTable($table, true);
     }
-    $forge->addField('created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
-    $forge->addField('updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-    $forge->createTable($table, true);
 }
 
 /*
