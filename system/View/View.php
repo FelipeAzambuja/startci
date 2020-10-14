@@ -285,9 +285,9 @@ class View implements RendererInterface
 					}
 				}
 				$this->renderVars['file'] = ++$this->viewsCount . ' ' . $this->renderVars['file'];
-				$output                   = '<!-- DEBUG-VIEW START ' . $this->renderVars['file'] . ' -->' . PHP_EOL
+				/*$output                   = '<!-- DEBUG-VIEW START ' . $this->renderVars['file'] . ' -->' . PHP_EOL
 					. $output . PHP_EOL
-					. '<!-- DEBUG-VIEW ENDED ' . $this->renderVars['file'] . ' -->' . PHP_EOL;
+					. '<!-- DEBUG-VIEW ENDED ' . $this->renderVars['file'] . ' -->' . PHP_EOL;*/
 			}
 		}
 

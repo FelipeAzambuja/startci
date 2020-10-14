@@ -73,8 +73,7 @@ use stdClass;
  * @package CodeIgniter
  * @mixin   BaseBuilder
  */
-class Model
-{
+class Model extends Entity{
 
 	/**
 	 * Pager instance.
@@ -358,10 +357,14 @@ class Model
 		{
 			$this->db = Database::connect($this->DBGroup);
 		}
-
-		$this->tempReturnType     = $this->returnType;
+                $c = new ReflectionClass($this);
+		$this->tempReturnType     = $c->getName();
 		$this->tempUseSoftDeletes = $this->useSoftDeletes;
 		$this->tempAllowCallbacks = $this->allowCallbacks;
+                $this->protectFields = false;
+                if(!$this->table){
+                    $this->table = strtolower($c->getShortName());
+                }
 
 		if (is_null($validation))
 		{
@@ -382,7 +385,7 @@ class Model
 	 *
 	 * @param mixed|array|null $id One primary key or an array of primary keys
 	 *
-	 * @return array|object|null    The resulting row of data, or null.
+	 * @return array|object|null|static    The resulting row of data, or null.
 	 */
 	public function find($id = null)
 	{
@@ -471,7 +474,7 @@ class Model
 	 * @param integer $limit
 	 * @param integer $offset
 	 *
-	 * @return array
+	 * @return array[static]
 	 */
 	public function findAll(int $limit = 0, int $offset = 0)
 	{
@@ -612,13 +615,15 @@ class Model
 	 * @return boolean
 	 * @throws \ReflectionException
 	 */
-	public function save($data): bool
+	public function save($data = null): bool
 	{
+                if(!$data){
+                    $data = $this->toArray();
+                }
 		if (empty($data))
 		{
 			return true;
 		}
-
 		if (is_object($data) && isset($data->{$this->primaryKey}))
 		{
 			$response = $this->update($data->{$this->primaryKey}, $data);
@@ -1844,23 +1849,23 @@ class Model
 	 *
 	 * @return mixed
 	 */
-	public function __get(string $name)
-	{
-		if (property_exists($this, $name))
-		{
-			return $this->{$name};
-		}
-		elseif (isset($this->db->$name))
-		{
-			return $this->db->$name;
-		}
-		elseif (isset($this->builder()->$name))
-		{
-			return $this->builder()->$name;
-		}
-
-		return null;
-	}
+//	public function __get(string $name)
+//	{
+//		if (property_exists($this, $name))
+//		{
+//			return $this->{$name};
+//		}
+//		elseif (isset($this->db->$name))
+//		{
+//			return $this->db->$name;
+//		}
+//		elseif (isset($this->builder()->$name))
+//		{
+//			return $this->builder()->$name;
+//		}
+//
+//		return null;
+//	}
 
 	/**
 	 * Checks for the existence of properties across this model, builder, and db connection.
