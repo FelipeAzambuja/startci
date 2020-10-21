@@ -1280,25 +1280,40 @@ function excel_date($data, $format = 'd/m/Y', $erro = false) {
     }
 }
 
+class FakeCarbon {
+
+    function __construct($date = null) {
+        
+    }
+
+    function format($format = null) {
+        return null;
+    }
+
+}
+
 /**
  * 
  * @param string $data
  * @return \Carbon\Carbon
  */
-function carbon(string $data = null): \Carbon\Carbon {
-    if ($data == null) {
-        return \Carbon\Carbon::now();
+function carbon(string $data = null) {
+
+    if (!$data || $data == '30/11/-0001' || $data == '0000-00-00') {
+        $nullformat = new FakeCarbon();
+        return $nullformat;
     }
     if (is_date('d/m/Y', $data)) {
         return \Carbon\Carbon::createFromFormat('d/m/Y', $data);
+    } elseif (is_date('d/m/Y H:m:s', $data)) {
+        return \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $data);
+    } elseif (is_date('Y-m-d H:m:s', $data)) {
+        return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $data);
     } elseif (is_date('Y-m-d', $data)) {
         return \Carbon\Carbon::createFromFormat('Y-m-d', $data);
     } else {
-        $nullformat = new stdClass();
-        $nullformat->format = function($format) {
-            return null;
-        };
-        return \Carbon\Carbon::create(0);
+        $nullformat = new FakeCarbon();
+        return $nullformat;
     }
 }
 
