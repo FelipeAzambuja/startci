@@ -7,16 +7,16 @@ use CodeIgniter\Controller;
 class Home extends Controller {
 
     public function index() {
-        return view('welcome_message.tpl',[
-            'nome' => 'Felipe'
-        ]);
-    }
-
-    function teste() {
-        if(is_post()){
-            
+        (is_cli()) ? eval(\Psy\sh()) : null;
+        if (is_post()) {
+            if (isset($_FILES['foto'])) {
+                jquery('#ft')->show();
+                $img = base64_encode(file_get_contents($_FILES['foto']['tmp_name']));
+                jquery('#ft')->attr('src', "data:image;base64,$img");
+            }
+            die;
         }
-        return view('teste');
+        return view('welcome_message');
     }
 
     //--------------------------------------------------------------------

@@ -71,7 +71,7 @@ use stdClass;
  *      - ensure validation is run against objects when saving items
  *
  * @package CodeIgniter
- * @mixin   BaseBuilder
+ * @mixin   CodeIgniter\Database\BaseBuilder
  */
 class Model extends Entity{
 
@@ -474,7 +474,7 @@ class Model extends Entity{
 	 * @param integer $limit
 	 * @param integer $offset
 	 *
-	 * @return array[static]
+	 * @return array[static]|static|self|parent
 	 */
 	public function findAll(int $limit = 0, int $offset = 0)
 	{

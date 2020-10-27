@@ -236,6 +236,7 @@ class View implements RendererInterface {
         $renderVars = $this->renderVars;
         if ($fileExt == 'tpl') {
             $smarty = new \Smarty();
+            $smarty->setCompileDir('../writable/smarty_compile/');
             foreach ($this->tempData as $key => $value) {
                 $smarty->assign($key, $value);
             }

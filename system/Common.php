@@ -1204,10 +1204,8 @@ function excel_date($data, $format = 'd/m/Y', $erro = false) {
         return $data_excel->clone()->addDays(($data - 2))->format($format);
     } elseif (is_date('d/m/Y', $data)) {
         return \Carbon\Carbon::createFromFormat('d/m/Y', $data)->format($format);
-        ;
     } elseif (is_date('Y-m-d', $data)) {
         return \Carbon\Carbon::createFromFormat('Y-m-d', $data)->format($format);
-        ;
     } else {
         return $erro;
     }
@@ -1257,9 +1255,14 @@ function is_date($format, $date) {
 function debugger() {
     $call = debug_backtrace()[0];
     $f = file_get_contents($call['file']);
-    if (str_contains($f, 'debugger();')) {
-        die("You need run again to debug\n");
-    }
     $f = str_replace('debugger();', '(is_cli()) ? eval(\Psy\sh()) : null;', $f);
     file_put_contents($call['file'], $f);
+}
+
+function js(): \CodeIgniter\JS {
+    return new \CodeIgniter\JS();
+}
+
+function jquery($selector = ''): \CodeIgniter\Jquery {
+    return new \CodeIgniter\Jquery($selector);
 }
