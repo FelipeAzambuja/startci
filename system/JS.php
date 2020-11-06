@@ -19,9 +19,17 @@ class JS {
     function eval($code) {
         echo "$code;";
     }
+    
     function set($value_name,$value) {
         $value = $this->encode($value);
         echo "{$value_name} = $value;";
     }
-
+    
+    public function __call($name, $arguments) {
+        foreach ($arguments as $key => $value) {
+            $arguments[$key] = $this->encode($value);
+        }
+        $a = implode(',', $arguments);
+        echo "{$name}({$a});";
+    }
 }

@@ -5,7 +5,7 @@ startci.update = function () {
         return false;
     }
     startci.loading = true;
-    $('form,input,select,textarea').not('[startci=true]').each(function (i, e) {
+    $('form,input,select,textarea,a').not('[startci=true]').each(function (i, e) {
         e = $(e);
         startci.ajaxels(e);
         e.attr('startci', 'true');
