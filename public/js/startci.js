@@ -5,7 +5,7 @@ startci.update = function () {
         return false;
     }
     startci.loading = true;
-    $('form,input,select,textarea,a').not('[startci=true]').each(function (i, e) {
+    $('form,input,select,textarea,a,button').not('[startci=true]').each(function (i, e) {
         e = $(e);
         startci.ajaxels(e);
         e.attr('startci', 'true');
@@ -22,21 +22,34 @@ startci.ajaxels = function (e) {
         var f = function (event, call) {
             if (event)
                 event.preventDefault();
-            var url = $(this).attr('url');
-            if (!url)
-                url = '';
-            if (!url.startsWith('http'))
-                url = location.href + url;
+            if ($(call).attr('lock') != undefined)
+                $(call).prop('disabled', true);
+            var html = $(call).html();
+            if ($(call).attr('lock_text'))
+                $(call).html($(call).attr('lock_text'));
             var event_name = 'ready';
             if (event)
                 event_name = event.type;
             var fnc = $(call).attr(event_name);
-            if (fnc)
-                url += '/../' + fnc;
+            var url = fnc;
             $(call).parents('form').ajaxSubmit({
                 url,
                 method: 'POST',
-                dataType: 'script'
+                headers :{
+                    startci:true
+                },
+                dataType: 'script',
+                success: function (response) {
+                    if ($(call).attr('lock') != undefined)
+                        $(call).prop('disabled', false);
+                    $(call).html(html);
+                },
+                error: function (response) {
+                    console.error(JSON.parse(response.responseText));
+                    if ($(call).attr('lock') != undefined)
+                        $(call).prop('disabled', false);
+                    $(call).html(html);
+                }
             });
         };
         e.on(ev, function (event) {

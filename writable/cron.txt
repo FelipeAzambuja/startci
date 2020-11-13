@@ -1,0 +1,2 @@
+# legal agora funciona com linhas em branco e comentarios
+clientes/email @always

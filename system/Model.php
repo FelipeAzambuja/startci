@@ -71,7 +71,8 @@ use stdClass;
  *      - ensure validation is run against objects when saving items
  *
  * @package CodeIgniter
- * @mixin   CodeIgniter\Database\BaseBuilder
+ * @method Model where(mixed $key,mixed $value = null,boolean $escape = false) VIA PROXY
+ * @mixin   \CodeIgniter\Database\BaseBuilder
  */
 class Model extends Entity{
 

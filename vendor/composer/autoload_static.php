@@ -81,6 +81,10 @@ class ComposerStaticInitedc852f7d6298349e61965b3873f2b29
         array (
             'CodeIgniter\\' => 12,
         ),
+        'A' => 
+        array (
+            'Ahc\\Cron\\' => 9,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -189,6 +193,10 @@ class ComposerStaticInitedc852f7d6298349e61965b3873f2b29
         'CodeIgniter\\' => 
         array (
             0 => __DIR__ . '/../..' . '/system',
+        ),
+        'Ahc\\Cron\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/adhocore/cron-expr/src',
         ),
     );
 
