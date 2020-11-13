@@ -1275,7 +1275,7 @@ function input_hidden($name, $value = '') {
 }
 
 function input_text($name, $value = '', $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
         <label><?= $name ?></label>
@@ -1286,7 +1286,7 @@ function input_text($name, $value = '', $col = 3) {
 }
 
 function input_number($name, $value = '', $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
         <label><?= $name ?></label>
@@ -1297,7 +1297,7 @@ function input_number($name, $value = '', $col = 3) {
 }
 
 function input_float($name, $dec = 2, $value = '', $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
         <label><?= $name ?></label>
@@ -1316,7 +1316,7 @@ function input_float($name, $dec = 2, $value = '', $col = 3) {
 }
 
 function input_money($name, $dec = 2, $value = '', $currency = '', $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
         <label><?= $name ?></label>
@@ -1335,7 +1335,7 @@ function input_money($name, $dec = 2, $value = '', $currency = '', $col = 3) {
 }
 
 function input_mask($name, $value = '', $mask = '###', $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
         <label><?= $name ?></label>
@@ -1351,7 +1351,7 @@ function input_mask($name, $value = '', $mask = '###', $col = 3) {
 }
 
 function input_select($name, $value = '', $options = [], $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
         <label><?= $name ?></label>
@@ -1372,7 +1372,7 @@ function input_select($name, $value = '', $options = [], $col = 3) {
 }
 
 function input_radio($name, $value = '', $label = '', $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?> text-center text-lg-left">
         <input type="radio" name="<?= $input_name ?>" style="margin-top: 2.75rem" value="<?= $value ?>" id="radio_<?= md5($value) ?>">
@@ -1383,7 +1383,7 @@ function input_radio($name, $value = '', $label = '', $col = 3) {
 }
 
 function input_check($name, $value = '', $label = '', $col = 3) {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', strtolower($name))));
+    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?> text-center text-lg-left">
         <input type="checkbox" name="<?= $input_name ?>[]" style="margin-top: 2.75rem" value="<?= $value ?>" id="check_<?= md5($value) ?>">
