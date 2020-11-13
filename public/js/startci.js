@@ -8,9 +8,26 @@ startci.update = function () {
     $('form,input,select,textarea,a,button').not('[startci=true]').each(function (i, e) {
         e = $(e);
         startci.ajaxels(e);
+        startci.shortcuts(e);
         e.attr('startci', 'true');
     });
     startci.loading = false;
+};
+startci.shortcuts = function (e) {
+    var shortcut = null;
+    if (shortcut = e.attr('shortcut')) {
+        shortcut = shortcut.split(',');
+        if (shortcut.length < 2)
+            shortcut[1] = 'click';
+        hotkeys.filter = function (event) {
+            return true;
+        };
+        hotkeys(shortcut[0].replace(/[|]{1,}/g, ','), (ev) => {
+            ev.preventDefault();
+            e.trigger(shortcut[1]);
+        });
+
+    }
 };
 startci.ajaxels = function (e) {
     if (e.prop('tagName') == 'FORM')
@@ -35,8 +52,8 @@ startci.ajaxels = function (e) {
             $(call).parents('form').ajaxSubmit({
                 url,
                 method: 'POST',
-                headers :{
-                    startci:true
+                headers: {
+                    startci: true
                 },
                 dataType: 'script',
                 success: function (response) {
