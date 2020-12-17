@@ -386,7 +386,7 @@ class Model extends Entity{
 	 *
 	 * @param mixed|array|null $id One primary key or an array of primary keys
 	 *
-	 * @return array|object|null|static    The resulting row of data, or null.
+	 * @return array|object|null|static|parent|super|this   The resulting row of data, or null.
 	 */
 	public function find($id = null)
 	{

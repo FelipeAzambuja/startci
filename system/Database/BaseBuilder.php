@@ -355,15 +355,25 @@ class BaseBuilder {
         $forge = Database::forge($this->db);
         $db = $this->db;
         $tables = $db->listTables();
-        if (in_array($table, $tables)) {
-            $field_names = $db->getFieldNames($table);
+        // $fields = array_unique($fields);
+        if (in_array(preg_replace('/[^0-9a-z]/', '', strtolower($table)), array_map(function ($v) {
+            return preg_replace('/[^0-9a-z]/', '', strtolower($v));
+        }, $tables))) {
+            $field_names = array_unique($db->getFieldNames($table));
+
             foreach ($fields as $k => $field) {
                 if (is_numeric($k)) {
                     $key_name = $field;
                 } else {
                     $key_name = $k;
                 }
-                if (!in_array($key_name, $field_names)) {
+                // if(str_contains($table,'acrescimo'))
+                // dd($key_name);
+                // if (!in_array(strtolower($key_name), array_map('strtolower', $field_names))) {
+                if (!in_array(preg_replace('/[^0-9a-z]/', '', strtolower($key_name)), array_map(function ($v) {
+                    return preg_replace('/[^0-9a-z]/', '', strtolower($v));
+                }, $field_names))) {
+
                     if (strpos($field, '.') !== false) {
                         $forge->addField([
                             $key_name => [
@@ -414,21 +424,22 @@ class BaseBuilder {
                     $forge->addKey($k);
                     $forge->addForeignKey($k, $field[0], $field[1]);
                 } else {
-
                     if (is_numeric($k)) {
-                        $forge->addField([
-                            $field => [
-                                'type' => 'text',
-                                'null' => true
-                            ]
-                        ]);
+
+                        //     $field => [
+                        //         'type' => 'text',
+                        //         'null' => true
+                        //     ]
+                        // ]);
+                        $forge->addField("{$field} TEXT NOT NULL");
                     } else {
-                        $forge->addField([
-                            $k => [
-                                'type' => $field,
-                                'null' => true
-                            ]
-                        ]);
+                        // $forge->addField([
+                        //     $k => [
+                        //         'type' => $field,
+                        //         'null' => true
+                        //     ]
+                        // ]);
+                        $forge->addField("{$k} {$field} NOT NULL");
                     }
                 }
             }

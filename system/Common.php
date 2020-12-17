@@ -1142,8 +1142,8 @@ if (!function_exists('view_cell')) {
  * @param string $value
  * @return Stringy
  */
-function str(string $value): Stringy {
-    return create($value);
+function str(string $value): Stringy\Stringy {
+    return Stringy\create($value);
 }
 
 function is_post() {

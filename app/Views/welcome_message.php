@@ -224,10 +224,6 @@
 
 </header>
 <section>
-    <form>
-        <input type="file" name="foto">
-        <input type="button" click="home/index" id="btn" value="Aqui">
-    </form>
     <img src="#" id="ft" alt="alt"/>
 	<h1>About this page</h1>
 
