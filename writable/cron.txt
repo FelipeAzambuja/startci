@@ -1,2 +1,12 @@
-# legal agora funciona com linhas em branco e comentarios
-clientes/email @always
+# https://github.com/adhocore/php-cron-expr
+# @yearly or @annually - every year
+# @monthly - every month
+# @daily - every day
+# @weekly - every week
+# @hourly - every hour
+# @5minutes - every 5 minutes
+# @10minutes - every 10 minutes
+# @15minutes - every 15 minutes
+# @30minutes - every 30 minutes
+# @always - every minute
+# pega 10 e envia 10 a cada 10 minutos
