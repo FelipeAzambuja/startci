@@ -1,0 +1,99 @@
+CRITICAL - 2020-12-26 10:41:07 --> Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33)
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Toolbar.php(426): header()
+#2 /www/wwwroot/startci.test/app/Config/Events.php(50): CodeIgniter\Debug\Toolbar->respond()
+#3 [internal function]: CodeIgniter\Events\Events::Config\{closure}()
+#4 /www/wwwroot/startci.test/system/Events/Events.php(188): call_user_func()
+#5 /www/wwwroot/startci.test/system/CodeIgniter.php(293): CodeIgniter\Events\Events::trigger()
+#6 /www/wwwroot/startci.test/index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2020-12-26 10:41:07 --> Uncaught ErrorException: Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33) in /www/wwwroot/startci.test/system/Debug/Exceptions.php:164
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Exceptions.php(164): header()
+#2 [internal function]: CodeIgniter\Debug\Exceptions->exceptionHandler()
+#3 {main}
+  thrown
+#0 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+#1 {main}
+CRITICAL - 2020-12-26 10:41:08 --> Uncaught ErrorException: Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33) in /www/wwwroot/startci.test/system/Debug/Exceptions.php:164
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Exceptions.php(164): header()
+#2 [internal function]: CodeIgniter\Debug\Exceptions->exceptionHandler()
+#3 {main}
+  thrown
+#0 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+#1 {main}
+CRITICAL - 2020-12-26 11:33:29 --> Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33)
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Toolbar.php(426): header()
+#2 /www/wwwroot/startci.test/app/Config/Events.php(50): CodeIgniter\Debug\Toolbar->respond()
+#3 [internal function]: CodeIgniter\Events\Events::Config\{closure}()
+#4 /www/wwwroot/startci.test/system/Events/Events.php(188): call_user_func()
+#5 /www/wwwroot/startci.test/system/CodeIgniter.php(293): CodeIgniter\Events\Events::trigger()
+#6 /www/wwwroot/startci.test/index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2020-12-26 11:33:29 --> Uncaught ErrorException: Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33) in /www/wwwroot/startci.test/system/Debug/Exceptions.php:164
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Exceptions.php(164): header()
+#2 [internal function]: CodeIgniter\Debug\Exceptions->exceptionHandler()
+#3 {main}
+  thrown
+#0 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+#1 {main}
+CRITICAL - 2020-12-26 11:34:27 --> Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33)
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Toolbar.php(426): header()
+#2 /www/wwwroot/startci.test/app/Config/Events.php(50): CodeIgniter\Debug\Toolbar->respond()
+#3 [internal function]: CodeIgniter\Events\Events::Config\{closure}()
+#4 /www/wwwroot/startci.test/system/Events/Events.php(188): call_user_func()
+#5 /www/wwwroot/startci.test/system/CodeIgniter.php(293): CodeIgniter\Events\Events::trigger()
+#6 /www/wwwroot/startci.test/index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2020-12-26 11:34:27 --> Uncaught ErrorException: Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33) in /www/wwwroot/startci.test/system/Debug/Exceptions.php:164
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Exceptions.php(164): header()
+#2 [internal function]: CodeIgniter\Debug\Exceptions->exceptionHandler()
+#3 {main}
+  thrown
+#0 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+#1 {main}
+CRITICAL - 2020-12-26 11:34:28 --> Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33)
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Toolbar.php(426): header()
+#2 /www/wwwroot/startci.test/app/Config/Events.php(50): CodeIgniter\Debug\Toolbar->respond()
+#3 [internal function]: CodeIgniter\Events\Events::Config\{closure}()
+#4 /www/wwwroot/startci.test/system/Events/Events.php(188): call_user_func()
+#5 /www/wwwroot/startci.test/system/CodeIgniter.php(293): CodeIgniter\Events\Events::trigger()
+#6 /www/wwwroot/startci.test/index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2020-12-26 11:34:28 --> Uncaught ErrorException: Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33) in /www/wwwroot/startci.test/system/Debug/Exceptions.php:164
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Exceptions.php(164): header()
+#2 [internal function]: CodeIgniter\Debug\Exceptions->exceptionHandler()
+#3 {main}
+  thrown
+#0 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+#1 {main}
+CRITICAL - 2020-12-26 11:34:28 --> Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33)
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Toolbar.php(426): header()
+#2 /www/wwwroot/startci.test/app/Config/Events.php(50): CodeIgniter\Debug\Toolbar->respond()
+#3 [internal function]: CodeIgniter\Events\Events::Config\{closure}()
+#4 /www/wwwroot/startci.test/system/Events/Events.php(188): call_user_func()
+#5 /www/wwwroot/startci.test/system/CodeIgniter.php(293): CodeIgniter\Events\Events::trigger()
+#6 /www/wwwroot/startci.test/index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2020-12-26 11:34:28 --> Uncaught ErrorException: Cannot modify header information - headers already sent by (output started at /www/wwwroot/startci.test/app/Config/Events.php:33) in /www/wwwroot/startci.test/system/Debug/Exceptions.php:164
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /www/wwwroot/startci.test/system/Debug/Exceptions.php(164): header()
+#2 [internal function]: CodeIgniter\Debug\Exceptions->exceptionHandler()
+#3 {main}
+  thrown
+#0 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+#1 {main}
