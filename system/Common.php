@@ -1252,6 +1252,67 @@ function is_date($format, $date) {
     return (DateTime::createFromFormat($format, $date)) !== false;
 }
 
+function thread($route) {
+    $p = new Process(explode(' ', 'php index.php ' . $route));
+    $p->setTimeout(null);
+    $p->setIdleTimeout(null);
+    $p->setOptions(['create_new_console' => true]);
+    $p->start(function($type, $data) {
+//        echo "$type - $data" . PHP_EOL;
+    });
+    return $p;
+}
+
+function thread_group($routes) {
+    $ps = array_map(function($p) {
+        return thread($p);
+    }, $routes);
+    foreach ($ps as $value) {
+        if ($value->isRunning())
+            $value->wait();
+    }
+}
+
+function thread_group_batch($routes, $size = 2) {
+    batch_exec_async(array_map(function($v) {
+                return "php index.php $v";
+            }, $routes), $size);
+}
+
+function batch_exec_async($cmds, $limit = 1000) {
+    foreach ($cmds as $key => $value) {
+        $p = new Process(explode(' ', $value));
+        $p->setTimeout(null);
+        $p->setIdleTimeout(null);
+        $p->setOptions(['create_new_console' => true]);
+        $cmds[$key] = $p;
+    }
+    foreach ($cmds as $cmd) {
+        do {
+            $total = 0;
+            foreach ($cmds as $c) {
+                if ($c->isRunning()) {
+                    $total++;
+                }
+            }
+
+            if ($total >= $limit) {
+                sleep(1);
+            }
+        } while ($total >= $limit);
+        $cmd->start(function($type, $data) {
+            echo "$type - $data" . PHP_EOL;
+        });
+        //        sleep(random_int(1, 2));
+    }
+    foreach ($cmds as $cmd) {
+        if ($cmd->isRunning()) {
+            $cmd->wait();
+        }
+    }
+    return true;
+}
+
 function debugger() {
     $call = debug_backtrace()[0];
     $f = file_get_contents($call['file']);
@@ -1275,33 +1336,33 @@ function input_hidden($name, $value = '') {
     ?><input type="hidden" name="<?= $name ?>" value="<?= $value ?>"><?php
 }
 
-function input_text($name, $value = '', $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_text($label, $name, $value = '', $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
-        <label><?= $name ?></label>
+        <label><?= $label ?></label>
         <input <?= $plus ?> type="text" name="<?= $input_name ?>" value="<?= $value ?>" class="form-control">
         <div id="validation_<?= $input_name ?>" class=""></div>
     </div>
     <?php
 }
 
-function input_number($name, $value = '', $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_number($label, $name, $value = '', $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
-        <label><?= $name ?></label>
+        <label><?= $label ?></label>
         <input <?= $plus ?> type="number" name="<?= $input_name ?>" value="<?= $value ?>" class="form-control">
         <div id="validation_<?= $input_name ?>" class=""></div>
     </div>
     <?php
 }
 
-function input_float($name, $dec = 2, $value = '', $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_float($label, $name, $dec = 2, $value = '', $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
-        <label><?= $name ?></label>
+        <label><?= $label ?></label>
         <input <?= $plus ?> type="text" name="<?= $input_name ?>" value="<?= number_format($value, $dec) ?>" class="form-control">
         <div id="validation_<?= $input_name ?>" class=""></div>
         <script>
@@ -1316,11 +1377,11 @@ function input_float($name, $dec = 2, $value = '', $col = 3, $plus = '') {
     <?php
 }
 
-function input_money($name, $dec = 2, $value = '', $currency = '', $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_money($label, $name, $dec = 2, $value = '', $currency = '', $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
-        <label><?= $name ?></label>
+        <label><?= $label ?></label>
         <input <?= $plus ?> type="text" name="<?= $input_name ?>" value="<?= number_format($value, $dec) ?>" class="form-control">
         <div id="validation_<?= $input_name ?>" class=""></div>
         <script>
@@ -1335,11 +1396,11 @@ function input_money($name, $dec = 2, $value = '', $currency = '', $col = 3, $pl
     <?php
 }
 
-function input_mask($name, $value = '', $mask = '###', $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_mask($label, $name, $value = '', $mask = '###', $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
-        <label><?= $name ?></label>
+        <label><?= $label ?></label>
         <input <?= $plus ?> type="text" name="<?= $input_name ?>" value="<?= $value ?>" class="form-control">
         <div id="validation_<?= $input_name ?>" class=""></div>
         <script>
@@ -1351,23 +1412,23 @@ function input_mask($name, $value = '', $mask = '###', $col = 3, $plus = '') {
     <?php
 }
 
-function input_select($name, $value = '', $options = [], $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_select($label, $name, $value = '', $options = [], $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?>">
-        <label><?= $name ?></label>
+        <label><?= $label ?></label>
         <select <?= $plus ?> name="<?= $input_name ?>"  class="form-control">
             <?php foreach ($options as $key => $v): ?>
-                <?php if (is_string($v)): ?>
-                            <!--<option value="<?= $v ?>" <?= ($v == $value) ? 'selected' : '' ?>><?= $v ?></option>-->
+        <?php if (is_string($v)): ?>
+                                                    <!--<option value="<?= $v ?>" <?= ($v == $value) ? 'selected' : '' ?>><?= $v ?></option>-->
                     <option value="<?= $v ?>" ><?= $v ?></option>
                 <?php else: ?>
-                    <?php if (isset($v->id)): ?>
-                            <!--<option value="<?= $v->id ?>" <?= in_array($value, [$v->id, $v->name ?? '', $v->nome ?? '', $v->description ?? '', $v->descricao ?? '']) ? 'selected' : '' ?>><?= $v->name ?? $v->nome ?? $v->description ?? $v->descricao ?? '' ?></option>-->
+            <?php if (isset($v->id)): ?>
+                                        <!--<option value="<?= $v->id ?>" <?= in_array($value, [$v->id, $v->name ?? '', $v->nome ?? '', $v->description ?? '', $v->descricao ?? '']) ? 'selected' : '' ?>><?= $v->name ?? $v->nome ?? $v->description ?? $v->descricao ?? '' ?></option>-->
                         <option value="<?= $v->id ?>" ><?= $v->name ?? $v->nome ?? $v->description ?? $v->descricao ?? '' ?></option>
                     <?php endif; ?>
                 <?php endif; ?>
-            <?php endforeach; ?>
+    <?php endforeach; ?>
         </select>
         <script>
             $(function () {
@@ -1379,8 +1440,8 @@ function input_select($name, $value = '', $options = [], $col = 3, $plus = '') {
     <?php
 }
 
-function input_radio($name, $value = '', $label = '', $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_radio($label, $name, $value = '', $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?> text-center text-lg-left">
         <input <?= $plus ?> type="radio" name="<?= $input_name ?>" style="margin-top: 2.75rem" value="<?= $value ?>" id="radio_<?= md5($value) ?>">
@@ -1390,8 +1451,8 @@ function input_radio($name, $value = '', $label = '', $col = 3, $plus = '') {
     <?php
 }
 
-function input_check($name, $value = '', $label = '', $col = 3, $plus = '') {
-    $input_name = str_replace(' ', '_', preg_replace('/[^a-z0-9 _]/', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', strtolower($name))));
+function input_check($label, $name, $value = '', $col = 3, $plus = '') {
+    $input_name = $name;
     ?>
     <div class="form-group<?= ($col) ? " col-12 col-lg-$col" : " col-lg " ?> text-center text-lg-left">
         <input <?= $plus ?> type="checkbox" name="<?= $input_name ?>[]" style="margin-top: 2.75rem" value="<?= $value ?>" id="check_<?= md5($value) ?>">

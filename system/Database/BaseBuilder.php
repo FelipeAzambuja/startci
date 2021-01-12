@@ -350,15 +350,14 @@ class BaseBuilder {
      *
      * @return BaseBuilder
      */
-    public function create(array $fields) {
+ public function create(array $fields) {
         $table = $this->QBFrom[0];
         $forge = Database::forge($this->db);
         $db = $this->db;
         $tables = $db->listTables();
-        // $fields = array_unique($fields);
         if (in_array(preg_replace('/[^0-9a-z]/', '', strtolower($table)), array_map(function ($v) {
-            return preg_replace('/[^0-9a-z]/', '', strtolower($v));
-        }, $tables))) {
+                            return preg_replace('/[^0-9a-z]/', '', strtolower($v));
+                        }, $tables))) {
             $field_names = array_unique($db->getFieldNames($table));
 
             foreach ($fields as $k => $field) {
@@ -367,24 +366,20 @@ class BaseBuilder {
                 } else {
                     $key_name = $k;
                 }
-                // if(str_contains($table,'acrescimo'))
-                // dd($key_name);
-                // if (!in_array(strtolower($key_name), array_map('strtolower', $field_names))) {
                 if (!in_array(preg_replace('/[^0-9a-z]/', '', strtolower($key_name)), array_map(function ($v) {
-                    return preg_replace('/[^0-9a-z]/', '', strtolower($v));
-                }, $field_names))) {
+                                    return preg_replace('/[^0-9a-z]/', '', strtolower($v));
+                                }, $field_names))) {
 
                     if (strpos($field, '.') !== false) {
+                        $field = explode('.', $field);
                         $forge->addField([
                             $key_name => [
                                 'type' => 'INT',
-                                'null' => true
+                                'null' => true,
                             ]
                         ]);
-                        $field = explode('.', $field);
                         $forge->addKey($key_name);
                         $forge->addForeignKey($key_name, $field[0], $field[1]);
-
                         $forge->addColumn($table, [
                             $key_name => [
                                 'type' => 'INT',
@@ -425,26 +420,28 @@ class BaseBuilder {
                     $forge->addForeignKey($k, $field[0], $field[1]);
                 } else {
                     if (is_numeric($k)) {
-
-                        //     $field => [
-                        //         'type' => 'text',
-                        //         'null' => true
-                        //     ]
-                        // ]);
-                        $forge->addField("{$field} TEXT NOT NULL");
+                        $forge->addField([
+                            $field => [
+                                'type' => 'text',
+                                'null' => true
+                            ]
+                        ]);
                     } else {
-                        // $forge->addField([
-                        //     $k => [
-                        //         'type' => $field,
-                        //         'null' => true
-                        //     ]
-                        // ]);
-                        $forge->addField("{$k} {$field} NOT NULL");
+                        $forge->addField([
+                            $k => [
+                                'type' => $field,
+                                'null' => true
+                            ]
+                        ]);
                     }
                 }
             }
             switch ($db->getPlatform()) {
-                case 'SQLite3':
+                case 'Postgre':
+                    $forge->addField('created_at timestamp with time zone  NOT NULL  DEFAULT current_timestamp');
+                    $forge->addField('updated_at timestamp with time zone  NOT NULL  DEFAULT current_timestamp');
+                    break;
+                    case 'SQLite3':
                     $forge->addField('created_at DATETIME DEFAULT (datetime(\'now\',\'localtime\'))');
                     $forge->addField('updated_at DATETIME DEFAULT (datetime(\'now\',\'localtime\'))');
                     break;
