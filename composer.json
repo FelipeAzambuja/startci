@@ -15,9 +15,13 @@
         "laminas/laminas-escaper": "^2.6",
         "eighty8/stringy": "^3.1",
         "tightenco/collect": "^7.19",
-        "smarty/smarty": "^3.1",
+        "smarty/smarty": "~3.1",
         "psy/psysh": "@stable",
-        "adhocore/cron-expr": "^1.1"
+        "adhocore/cron-expr": "^1.1",
+        "symfony/process": "^5.2",
+        "php-webdriver/webdriver": "^1.9",
+        "fakerphp/faker": "^1.13",
+        "nesbot/carbon": "^2.43"
     },
     "require-dev": {
         "codeigniter4/codeigniter4-standard": "^1.0",

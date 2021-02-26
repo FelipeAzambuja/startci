@@ -2,13 +2,12 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
+use App\Models\Pessoas;
 
-class Home extends Controller {
-
-    public function index() {
-        return view('welcome_message');
-    }
-
-    //--------------------------------------------------------------------
+class Home extends BaseController
+{
+	public function index()
+	{
+		return smarty('welcome_message');
+	}
 }
