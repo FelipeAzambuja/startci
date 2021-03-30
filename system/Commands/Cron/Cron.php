@@ -52,7 +52,7 @@ class Cron extends \CodeIgniter\CLI\BaseCommand {
         $file = file_get_contents('../writable/cron.txt');
         foreach (explode(PHP_EOL, $file) as $value) {
             $value = trim($value);
-            if ($value[0] ?? null == '#' || !$value)
+            if (($value[0] ?? null == '#') || !$value)
                 continue;
             $v = explode(':', $value);
             $r[$v[1]] = $v[0];
