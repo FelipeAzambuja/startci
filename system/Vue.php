@@ -20,7 +20,6 @@ class Vue {
 
     function __construct($varname = 'vue') {
         $this->varname = $varname;
-        $this->data = @$_POST['vue'][$varname]; //???
     }
 
     function set($var, $value) {
@@ -28,15 +27,11 @@ class Vue {
         echo "{$this->varname}.{$var} = {$value};";
     }
 
-    function data($data = null) {
-        if ($data === null) {
-            return $this->data; //???
-        } else {
-            foreach ($data as $key => $value) {
-                $value = json_encode($value);
-                echo "{$this->varname}.{$key} = {$value};";
-            }
-        }
+    function get($key = null) {
+        if ($key)
+            return $_POST['vue'][$this->varname][$key] ?? null;
+        else
+            return $_POST['vue'][$this->varname] ?? null;
     }
 
 }
