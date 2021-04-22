@@ -128,3 +128,5 @@ nb-configuration.xml
 .cache/*
 /node_modules/
 .cache
+/app/Views/teste.tpl
+/app/Controllers/Testes.php
