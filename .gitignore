@@ -130,3 +130,6 @@ nb-configuration.xml
 .cache
 /app/Views/teste.tpl
 /app/Controllers/Testes.php
+/app/Components/Navbar.tpl
+/app/Components/forms/dates/*
+/app/Views/components/

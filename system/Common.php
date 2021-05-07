@@ -1330,6 +1330,76 @@ function batch_exec_async($cmds, $limit = 1000) {
     return true;
 }
 
+function assets_build(array $files, $id = '') {
+    $css = [];
+    $js = [];
+    foreach ($files as $key => $f) {
+        if (str_ends_with($f, '.js'))
+            $js[] = $f;
+        if (str_ends_with($f, '.css'))
+            $css[] = $f;
+    }
+    if ($js)
+        js_build($files, $id);
+    if ($css)
+        css_build($files, $id);
+}
+
+function css_build(array $files, $id = '') {
+    $c = stream_context_create([
+        'ssl' => [
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ]
+    ]);
+    if (file_exists("public/build$id.css"))
+        echo "<link rel='stylesheet' href='/public/build$id.css' />";
+    $css = '';
+    foreach ($files as $key => $f)
+        $css .= file_get_contents($f, false, $c) . PHP_EOL;
+    if (!$css)
+        return '';
+    file_put_contents("public/build$id.css", $css);
+    echo "<link rel='stylesheet' href='/public/build$id.css' />";
+}
+
+function js_build(array $files, $id = '') {
+    $c = stream_context_create([
+        'ssl' => [
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ]
+    ]);
+    if (file_exists("public/build$id.js"))
+        echo "<script src='/public/build$id.js'></script>";
+    $js = '';
+    foreach ($files as $key => $f)
+        $js .= file_get_contents($f, false, $c) . PHP_EOL;
+    if (!$js)
+        return;
+    file_put_contents("public/build$id.js", $js);
+    echo "<script src='/public/build$id.js'></script>";
+}
+
+function assets_cache($file) {
+    if (!$file)
+        return '';
+    if (is_array($file)) {
+        foreach ($file as $key => $f)
+            assets_cache($f);
+        return '';
+    }
+    $id = md5($file);
+    if (!$content = cache()->get("assets_$id")) {
+        $content = file_get_contents($file);
+        cache()->save("assets_$id", $content, 300);
+    }
+    if (str_contains($file, '.js'))
+        echo "<script type='text/javascript'>$content</script>" . PHP_EOL;
+    if (str_contains($file, '.css'))
+        echo "<style>$content</style>" . PHP_EOL;
+}
+
 function smarty($view, $data = []) {
     $smarty = new SmartyBC();
     @mkdir('writable/cache/smarty/templates_c/', 0777, true);
@@ -1340,6 +1410,27 @@ function smarty($view, $data = []) {
     foreach ($data as $key => $value) {
         $smarty->assign($key, $value);
     }
+    if (file_exists(APPPATH . 'Components/'))
+        $files = array_map(function (SplFileInfo $v)use ($smarty) {
+            $value = $v->getPathname();
+            if ($v->isDir() || !$v->isFile())
+                return false;
+            $filename = basename($value);
+            $dir = dirname($value);
+            $comp_path = APPPATH . 'Components/';
+            if (str_starts_with($dir, $comp_path))
+                $namespace = str_replace('/', '_', str_replace($comp_path, '', $dir)) . '_';
+            else
+                $namespace = '';
+            $component_name = substr($filename, 0, -4);
+            $smarty->registerPlugin('function', $namespace . $component_name, function ($params, Smarty_Internal_Template $smarty)use ($value) {
+                $tpl = $value;
+                foreach ($params as $key => $value)
+                    $smarty->assign($key, $value);
+                return $smarty->fetch($tpl);
+            });
+            return true;
+        }, iterator_to_array(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(APPPATH . 'Components/'))));
     return $smarty->fetch("app/Views/{$view}.tpl");
 }
 
@@ -1359,12 +1450,13 @@ function js(): \CodeIgniter\JS {
 function jquery($selector = ''): \CodeIgniter\Jquery {
     return new \CodeIgniter\Jquery($selector);
 }
+
 /**
  * 
  * @param type $varname
  * @return \CodeIgniter\Vue
  */
-function vue($varname = 'vue'):\CodeIgniter\Vue {
+function vue($varname = 'vue'): \CodeIgniter\Vue {
     return new \CodeIgniter\Vue($varname);
 }
 

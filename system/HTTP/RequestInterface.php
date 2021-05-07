@@ -17,6 +17,8 @@ namespace CodeIgniter\HTTP;
  * @mixin \CodeIgniter\HTTP\IncomingRequest
  * @mixin \CodeIgniter\HTTP\CLIRequest
  * @mixin \CodeIgniter\HTTP\CURLRequest
+ * @mixin \CodeIgniter\HTTP\IncomingRequest
+ * @mixin \CodeIgniter\HTTP\MockIncomingRequest
  */
 interface RequestInterface
 {

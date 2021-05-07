@@ -491,8 +491,7 @@ abstract class BaseModel
 	 * Fetches the row of database
 	 *
 	 * @param array|integer|string|null $id One primary key or an array of primary keys
-	 *
-	 * @return array|object|null|self|parent The resulting row of data, or null.
+	 * @return self|parent|array|object|null The resulting row of data, or null.
 	 */
 	public function find($id = null)
 	{
