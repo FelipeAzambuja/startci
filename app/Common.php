@@ -13,3 +13,6 @@
  *
  * @link: https://codeigniter4.github.io/CodeIgniter4/
  */
+function model_pessoas(){
+    return new \App\Models\Pessoas();
+}

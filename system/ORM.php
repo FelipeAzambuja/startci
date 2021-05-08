@@ -3,378 +3,155 @@
 namespace CodeIgniter;
 
 /**
+ * @method ORM where($key, $value = null, bool $escape = null) Description
+ * @method ORM orWhere($key, $value = null, bool $escape = null) Description
+ * @method ORM distinct(bool $val = true)
+ * @method ORM ignore(bool $ignore = true)
+ * @method ORM select($select = '*', bool $escape = null)
+ * @method ORM selectMax(string $select = '', string $alias = '')
+ * @method ORM selectMin(string $select = '', string $alias = '')
+ * @method ORM selectAvg(string $select = '', string $alias = '')
+ * @method ORM selectSum(string $select = '', string $alias = '')
+ * @method ORM selectCount(string $select = '', string $alias = '')
+ * @method ORM from($from, bool $overwrite = false)
+ * @method ORM join(string $table, string $cond, string $type = '', bool $escape = null)
+ * @method ORM whereIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM orWhereIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM whereNotIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM orWhereNotIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM havingIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM orHavingIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM havingNotIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM orHavingNotIn(string $key = null, $values = null, bool $escape = null)
+ * @method ORM like($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM notLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM orLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM orNotLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM havingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM notHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM orHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM orNotHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+ * @method ORM groupStart()
+ * @method ORM orGroupStart()
+ * @method ORM notGroupStart()
+ * @method ORM orNotGroupStart()
+ * @method ORM groupEnd()
+ * @method ORM havingGroupStart()
+ * @method ORM orHavingGroupStart()
+ * @method ORM notHavingGroupStart()
+ * @method ORM orNotHavingGroupStart()
+ * @method ORM havingGroupEnd()
+ * @method ORM groupBy($by, bool $escape = null)
+ * @method ORM having($key, $value = null, bool $escape = null)
+ * @method ORM orHaving($key, $value = null, bool $escape = null)
+ * @method ORM orderBy(string $orderBy, string $direction = '', bool $escape = null)
+ * @method ORM limit(?int $value = null, ?int $offset = 0)
+ * @method ORM offset(int $offset)
+ * @method ORM resetQuery()
+ * @method ORM def($values = [])
+ * @method ORM create(array $fields)
+ * 
  * @mixin Database\BaseBuilder
  */
-class ORM implements ArrayAccess {
-
-    public function __call(string $name, array $params) {
-        $result = null;
-        if (method_exists($this->builder, $name)) {
-            $result = $this->builder->{$name}(...$params);
-        }
-        return $result;
-    }
-
-    function relationOne($table, $field, $id = 'id') {
-        return $this->relation($table, $field, $id, 'one');
-    }
-
-    function relationMany($table, $field, $id = 'id') {
-        return $this->relation($table, $field, $id, 'many');
-    }
-
-    /**
-     * 
-     * @param type $table model name from table
-     * @param type $field 
-     * @param type $id
-     * @param type $count
-     * @return type
-     */
-    function relation($table, $field, $id = 'id', $count = 'many') { // ?
-        if (is_string($table)) {
-            $table = db()->table($table);
-        }
-        if ($count === 'one') {
-            return $table->where($id, $this->raw($field))->first();
-        } else {
-            return $table->where($id, $this->raw($field))->get();
-        }
-    }
-
-    //eventos
-    function after_insert() {
-        
-    }
-
-    function before_insert(&$return) {
-        
-    }
-
-    function after_update($where) {
-        
-    }
-
-    function before_update($where, &$return) {
-        
-    }
-
-    function after_delete($where) {
-        
-    }
-
-    function before_delete($where, &$return) {
-        
-    }
-
-    function on_error($error) {
-        
-    }
-
-    /**
-     * 
-     * @param type $event insert,update,delete,create,drop,error
-     * @param type $args
-     */
-    function on_event($event, $args = []) {
-        
-    }
-
-    function on_set(&$field, &$value) {
-        
-    }
-
-    function on_get(&$field, &$value) {
-        
-    }
+class ORM implements \JsonSerializable {
 
     /**
      * 
      * @var Database\BaseConnection
      */
     private $db;
+
+    /**
+     * 
+     * @var Database\BaseBuilder
+     */
     private $builder;
-    private $doc;
-    public $class;
-    private $data = [];
-    private $joins = [];
+    private $class;
+    public $table = '';
+    public $autoload = [];
 
     public function __construct($db = null) {
         $this->db = db_connect($db);
         $this->class = get_class($this);
-        $class = new ReflectionClass($this->class);
-        $comment = $class->getDocComment();
-        $this->__parse_doc($comment);
-        $this->builder = $this->db->table($this->doc['table']);
-
-        $autoload = isset($this->doc['autoload']) ? $this->doc['autoload'] : [];
-        if ($autoload === null) {
-            $autoload = [];
-        }
-        foreach ($this->doc['property'] as $p) {
-            if (!in_array($p[1], $autoload)) {
-                continue;
-            }
-            $fk = explode('=', $p[3]);
-            $exfk = explode(' ', $fk[1]);
-            $count = 'many';
-            if (count($exfk) > 1) {
-                $fk[1] = $exfk[0];
-                $count = $exfk[1];
-            }
-            $this->load($p[1], $fk[0], $fk[1], substr($p[2], 1), $count);
-            $obj = new ReflectionClass($p[1]);
-            if ($count === 'one') {
-                $this->{substr($p[2], 1)} = $obj->newInstance();
-            } else {
-                $this->{substr($p[2], 1)} = [];
-            }
-        }
-    }
-
-    function error() {
-        $e = $this->db->error();
-        $this->on_event('error', ['error' => $e]);
-        return $e;
-    }
-
-    public function __set($name, $value) {
-        $info = $this->doc['property'][$name];
-//        if (is_array($value)) {
-//            return;
-//        }
-        $this->on_set($name, $value);
-        $this->data[$name] = $value;
-    }
-
-    public function __toString() {
-        return isset($this->data['id']) ? strval($this->data['id']) : '';
-    }
-
-    function doc() {
-        return $this->doc;
-    }
-
-    public function __get($name) {
-        $return = null;
-        if (isset($this->data[$name])) {
-            $return = $this->data[$name];
-        } else {
-            $return = null;
-        }
-        $this->on_get($name, $return);
-        return $return;
-    }
-
-    public function fromArray($array) {
-        $coluns = array_values(array_map(function ($value) {
-                    return substr($value[2], 1);
-                }, $this->doc['property']));
-        foreach ($array as $key => $value) {
-            if (in_array($key, $coluns)) {
-//                if ($array[$key] !== null && $array[$key] !== '') {
-                $this->{$key} = $value;
-//                }
-            }
-        }
-        return $this;
-    }
-
-    /**
-     * @todo Precisa criar reversão de muitos para 1 
-     * @param string $class
-     * @param string $alias
-     */
-    function load($class, $me, $fk, $alias = null, $count = 'many') {
-        if (class_exists($class)) {
-            $objClass = (new ReflectionClass($class))->newInstance();
-            $objSQL = new SQL(db());
-            $objSQL->class = $class;
-            $objSQL->table = $objClass->doc['table'];
-            $objSQL->alias = $alias;
-            if ($objSQL->alias === null) {
-                $objSQL->alias = $objSQL->table;
-            }
-            $this->sql->join[] = [$objSQL, $fk, $me, $class, $count];
-        }
+        $c_name = explode('\\', $this->class);
+        $c_name = $c_name[count($c_name) - 1];
+        if (!$this->table)
+            $this->table = strtolower($c_name);
+        $this->builder = $this->db->table($this->table);
     }
 
     /**
      * 
      * @param integer $id
-     * @return static
+     * @return self|this|null
      */
-    function byId($id, $default = []) {
-        if (strlen($id) === 0) {
-            return $this->fromArray($default);
-        }
-        return $this->builder->where([
-                    'id' => $id
-                ])->first($this->class);
+    function byId($id) {
+        $this->builder->where('id', $id);
+        return $this->first();
+    }
+
+    function insert(array $set = null, bool $escape = null) {
+        if ($this->builder->insert($set, $escape))
+            return $this->byId($this->builder->selectMax('id')->first($this->class)->id);
+        else
+            return null;
+    }
+
+    function relation($class, $fk, $id = null, $mode = 'many') {
+        $c = new $class($this->db);
+        if (!$id)
+            $id = $this->id;
+        return $c->where($fk, $id)->get();
+    }
+
+    function relationOne($class, $fk, $id) {
+        $c = new $class($this->db);
+        return $c->where($fk, $id)->first();
+    }
+
+    function get(): \Tightenco\Collect\Support\Collection {
+        $autoload = $this->autoload;
+        $r = collect($this->builder->rs($this->class))->map(function ($v, $k)use ($autoload) {
+            foreach ($autoload as $key => $value)
+                $v->{$value} = $v->{$value};
+            return $v;
+        });
+        return $r;
     }
 
     /**
      * 
-     * @return static|array
+     * @return self|this|null
      */
-    function get() {
-        return $this->db->rs($this->class);
+    function first() {
+        $v = $this->builder->first($this->class);
+        foreach ($this->autoload as $key => $value)
+            $v->{$value} = $v->{$value};
+        return $v;
     }
 
-  
-    function column($name) {
-        return $this->get($this->class)->map(function ($l) use ($name) {
-                    return $l->{$name};
-                });
+    /**
+     * 
+     * @param string $name
+     * @param array $params
+     * @return Database\BaseBuilder
+     */
+    public function __call(string $name, array $params) {
+        $result = null;
+        if (method_exists($this->builder, $name))
+            $result = $this->builder->{$name}(...$params);
+        if (is_object($result) && !$result instanceof ORM)
+            $result = $this;
+        return $result;
     }
 
-
-    function insert($count_limit = -1) {
-        if (is_array($count_limit)) {
-            $this->data += $count_limit;
-            $count_limit = -1;
-        }
-        $this->on_event('insert', ['count_limit' => $count_limit]);
-        if ($this->after_insert() === false) {
-            return false;
-        }
-        $return = null;
-        $insertData = [];
-        foreach ($this->data as $k => $d) {
-            if (is_array($d)) { // para elementos com autoload
-                continue;
-            }
-            if ($d instanceof Model) {
-                if ($d->id !== null) {
-                    $insertData[$k] = $d->id;
-                }
-            } else {
-                $insertData[$k] = $d;
-            }
-        }
-        $return = $this->sql->insert($insertData, $count_limit);
-        if ($return === false) {
-            $this->on_error($this->error());
-        }
-        $this->before_insert($return);
-        return $return;
-    }
-
-    function update() {
-        $this->on_event('update');
-        if ($this->after_update($this->sql->where) === false) {
-            return false;
-        }
-        $return = null;
-        $updateData = [];
-        foreach ($this->data as $k => $d) {
-            if (is_array($d)) { // para elementos com autoload
-                continue;
-            }
-            if ($d instanceof Model) {
-                if ($d->id !== null) {
-                    $updateData[$k] = $d->id;
-                }
-            } else {
-                $updateData[$k] = $d;
-            }
-        }
-        $return = $this->sql->update($updateData);
-        if ($return === false) {
-            $this->on_error($this->error());
-        }
-        $this->after_update($this->sql->where, $return);
-        return $return;
-    }
-
-    function insert_or_update() {
-        $this->on_event('insert_or_update');
-        $return = $this->sql->insert_or_update($this->data);
-        if ($return === false) {
-            $this->on_error($this->error());
-        }
-        return $return;
-    }
-
-    function delete() {
-        $this->on_event('delete');
-        if ($this->after_delete($this->sql->where) === false) {
-            return false;
-        }
-        $return = null;
-        if ($this->id !== null && count($this->sql->where) < 1) {
-            $this->where('id', $this->id);
-        }
-        $return = $this->sql->delete();
-        if ($return === false) {
-            $this->on_error($this->error());
-        }
-        $this->before_delete($this->sql->where, $return);
-        return $return;
-    }
-
-    private function __parse_doc($comment) {
-        $docs = [];
-        foreach (explode("\n", $comment) as $line) {
-            $line = trim($line);
-            if (!in_array($line, ['', '/**', '*/'])) {
-                $value = [];
-                $tmp = array_map(function ($v) {
-                    return ($v !== ' ') ? $v : '';
-                }, explode(' ', $line));
-                $tmp = array_slice($tmp, 1);
-
-                if ($tmp[0] === '@table') {
-                    $doc['table'] = $tmp[1];
-                } elseif ($tmp[0] === '@alias') {
-                    $doc['alias'] = $tmp[1];
-                } elseif ($tmp[0] === '@autoload') {
-                    $doc['autoload'] = explode(',', $tmp[1]);
-                } else {
-                    if (count($tmp) > 1) {
-                        $tmp[3] = implode(' ', array_slice($tmp, 3));
-                        for ($index = 4; $index <= count($tmp); $index++) {
-                            unset($tmp[$index]);
-                        }
-                    }
-                    $doc['property'][substr($tmp[2], 1)] = $tmp;
-                }
-            }
-        }
-        $this->doc = $doc;
-    }
-
-    public function toArray() {
-        $data = [];
-        foreach ($this->doc['property'] as $key => $value) {
-            $data[$key] = $this->{$key} . '';
-        }
-        return $data;
-    }
-
-    public function toJson() {
-        $json = [];
-        foreach ($this->doc['property'] as $key => $value) {
-            $valor = $this->{$key};
-            $json[] = '"' . $key . '":"' . $valor . '"';
-        }
-        return '{' . implode(',', $json) . '}';
-    }
-
-    public function offsetExists($offset): bool {
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset) {
-        return $this->{$offset};
-    }
-
-    public function offsetSet($offset, $value): void {
-        $this->{$offset} = $value;
-    }
-
-    public function offsetUnset($offset): void {
-        $this->{$offset} = null;
+    public function jsonSerialize() {
+        $r = $this->builder->def();
+        foreach ($r as $key => $v)
+            $r->{$key} = $this->{$key};
+        foreach ($this->autoload as $key => $value)
+            $r->{$value} = $this->{$value};
+        return $r;
     }
 
 }

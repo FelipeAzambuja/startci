@@ -133,3 +133,5 @@ nb-configuration.xml
 /app/Components/Navbar.tpl
 /app/Components/forms/dates/*
 /app/Views/components/
+/app/Models/PessoasTelefones.php
+/app/Models/Pessoas.php
