@@ -1431,6 +1431,7 @@ function smarty($view, $data = []) {
             });
             return true;
         }, iterator_to_array(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(APPPATH . 'Components/'))));
+    chdir('..');
     return $smarty->fetch("app/Views/{$view}.tpl");
 }
 
