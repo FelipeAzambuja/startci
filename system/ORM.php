@@ -83,7 +83,7 @@ class ORM implements \JsonSerializable {
     /**
      * 
      * @param integer $id
-     * @return self|this|null
+     * @return self|parent|static
      */
     function byId($id) {
         $this->builder->where('id', $id);
@@ -109,6 +109,10 @@ class ORM implements \JsonSerializable {
         return $c->where($fk, $id)->first();
     }
 
+    /**
+     * 
+     * @return \Tightenco\Collect\Support\Collection|self|parent|static|array|array[static]
+     */
     function get(): \Tightenco\Collect\Support\Collection {
         $autoload = $this->autoload;
         $r = collect($this->builder->rs($this->class))->map(function ($v, $k)use ($autoload) {
@@ -121,7 +125,7 @@ class ORM implements \JsonSerializable {
 
     /**
      * 
-     * @return self|this|null
+     * @return self|this|null|parent|static
      */
     function first() {
         $v = $this->builder->first($this->class);
@@ -152,6 +156,10 @@ class ORM implements \JsonSerializable {
         foreach ($this->autoload as $key => $value)
             $r->{$value} = $this->{$value};
         return $r;
+    }
+
+    function toJson() {
+        return json_encode($this);
     }
 
 }
