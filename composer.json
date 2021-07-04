@@ -21,7 +21,8 @@
         "php-webdriver/webdriver": "^1.9",
         "fakerphp/faker": "^1.13",
         "nesbot/carbon": "^2.43",
-        "tightenco/collect": "^8.34"
+        "tightenco/collect": "^8.34",
+        "phpdocumentor/reflection-docblock": "^5.2"
     },
     "require-dev": {
         "codeigniter4/codeigniter4-standard": "^1.0",
