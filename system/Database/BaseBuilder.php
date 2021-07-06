@@ -27,7 +27,8 @@ use Config\Database as ConfigDatabase;
  *
  * @mixin \CodeIgniter\Model
  */
-class BaseBuilder {
+class BaseBuilder
+{
 
     /**
      * Reset DELETE data flag
@@ -258,7 +259,8 @@ class BaseBuilder {
      * @param  array               $options
      * @throws DatabaseException
      */
-    public function __construct($tableName, ConnectionInterface &$db, array $options = null) {
+    public function __construct($tableName, ConnectionInterface &$db, array $options = null)
+    {
         if (empty($tableName)) {
             throw new DatabaseException('A table must be specified when creating a new Query Builder.');
         }
@@ -284,7 +286,8 @@ class BaseBuilder {
      *
      * @return ConnectionInterface
      */
-    public function db(): ConnectionInterface {
+    public function db(): ConnectionInterface
+    {
         return $this->db;
     }
 
@@ -297,7 +300,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function testMode(bool $mode = true) {
+    public function testMode(bool $mode = true)
+    {
         $this->testMode = $mode;
 
         return $this;
@@ -310,7 +314,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    public function getTable(): string {
+    public function getTable(): string
+    {
         return $this->tableName;
     }
 
@@ -322,7 +327,8 @@ class BaseBuilder {
      *
      * @return array
      */
-    public function getBinds(): array {
+    public function getBinds(): array
+    {
         return $this->binds;
     }
 
@@ -338,7 +344,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function ignore(bool $ignore = true) {
+    public function ignore(bool $ignore = true)
+    {
         $this->QBIgnore = $ignore;
 
         return $this;
@@ -356,7 +363,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function select($select = '*', bool $escape = null) {
+    public function select($select = '*', bool $escape = null)
+    {
         if (is_string($select)) {
             $select = explode(',', $select);
         }
@@ -400,7 +408,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function selectMax(string $select = '', string $alias = '') {
+    public function selectMax(string $select = '', string $alias = '')
+    {
         return $this->maxMinAvgSum($select, $alias);
     }
 
@@ -416,7 +425,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function selectMin(string $select = '', string $alias = '') {
+    public function selectMin(string $select = '', string $alias = '')
+    {
         return $this->maxMinAvgSum($select, $alias, 'MIN');
     }
 
@@ -432,7 +442,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function selectAvg(string $select = '', string $alias = '') {
+    public function selectAvg(string $select = '', string $alias = '')
+    {
         return $this->maxMinAvgSum($select, $alias, 'AVG');
     }
 
@@ -448,7 +459,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function selectSum(string $select = '', string $alias = '') {
+    public function selectSum(string $select = '', string $alias = '')
+    {
         return $this->maxMinAvgSum($select, $alias, 'SUM');
     }
 
@@ -464,7 +476,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function selectCount(string $select = '', string $alias = '') {
+    public function selectCount(string $select = '', string $alias = '')
+    {
         return $this->maxMinAvgSum($select, $alias, 'COUNT');
     }
 
@@ -486,7 +499,8 @@ class BaseBuilder {
      * @throws DataException
      * @throws DatabaseException
      */
-    protected function maxMinAvgSum(string $select = '', string $alias = '', string $type = 'MAX') {
+    protected function maxMinAvgSum(string $select = '', string $alias = '', string $type = 'MAX')
+    {
         if ($select === '') {
             throw DataException::forEmptyInputGiven('Select');
         }
@@ -522,7 +536,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function createAliasFromTable(string $item): string {
+    protected function createAliasFromTable(string $item): string
+    {
         if (strpos($item, '.') !== false) {
             $item = explode('.', $item);
 
@@ -543,7 +558,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function distinct(bool $val = true) {
+    public function distinct(bool $val = true)
+    {
         $this->QBDistinct = $val;
 
         return $this;
@@ -561,7 +577,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function from($from, bool $overwrite = false) {
+    public function from($from, bool $overwrite = false)
+    {
         if ($overwrite === true) {
             $this->QBFrom = [];
             $this->db->setAliasedTables([]);
@@ -603,7 +620,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function join(string $table, string $cond, string $type = '', bool $escape = null) {
+    public function join(string $table, string $cond, string $type = '', bool $escape = null)
+    {
         if ($type !== '') {
             $type = strtoupper(trim($type));
 
@@ -677,7 +695,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function where($key, $value = null, bool $escape = null) {
+    public function where($key, $value = null, bool $escape = null)
+    {
         return $this->whereHaving('QBWhere', $key, $value, 'AND ', $escape);
     }
 
@@ -695,7 +714,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orWhere($key, $value = null, bool $escape = null) {
+    public function orWhere($key, $value = null, bool $escape = null)
+    {
         return $this->whereHaving('QBWhere', $key, $value, 'OR ', $escape);
     }
 
@@ -717,7 +737,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    protected function whereHaving(string $qbKey, $key, $value = null, string $type = 'AND ', bool $escape = null) {
+    protected function whereHaving(string $qbKey, $key, $value = null, string $type = 'AND ', bool $escape = null)
+    {
         if (!is_array($key)) {
             $key = [$key => $value];
         }
@@ -787,7 +808,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function whereIn(string $key = null, $values = null, bool $escape = null) {
+    public function whereIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, false, 'AND ', $escape);
     }
 
@@ -805,7 +827,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orWhereIn(string $key = null, $values = null, bool $escape = null) {
+    public function orWhereIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, false, 'OR ', $escape);
     }
 
@@ -823,7 +846,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function whereNotIn(string $key = null, $values = null, bool $escape = null) {
+    public function whereNotIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, true, 'AND ', $escape);
     }
 
@@ -841,7 +865,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orWhereNotIn(string $key = null, $values = null, bool $escape = null) {
+    public function orWhereNotIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, true, 'OR ', $escape);
     }
 
@@ -859,7 +884,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function havingIn(string $key = null, $values = null, bool $escape = null) {
+    public function havingIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, false, 'AND ', $escape, 'QBHaving');
     }
 
@@ -877,7 +903,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orHavingIn(string $key = null, $values = null, bool $escape = null) {
+    public function orHavingIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, false, 'OR ', $escape, 'QBHaving');
     }
 
@@ -895,7 +922,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function havingNotIn(string $key = null, $values = null, bool $escape = null) {
+    public function havingNotIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, true, 'AND ', $escape, 'QBHaving');
     }
 
@@ -913,7 +941,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orHavingNotIn(string $key = null, $values = null, bool $escape = null) {
+    public function orHavingNotIn(string $key = null, $values = null, bool $escape = null)
+    {
         return $this->_whereIn($key, $values, true, 'OR ', $escape, 'QBHaving');
     }
 
@@ -937,7 +966,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    protected function _whereIn(string $key = null, $values = null, bool $not = false, string $type = 'AND ', bool $escape = null, string $clause = 'QBWhere') {
+    protected function _whereIn(string $key = null, $values = null, bool $not = false, string $type = 'AND ', bool $escape = null, string $clause = 'QBWhere')
+    {
         if (empty($key) || !is_string($key)) {
             if (CI_DEBUG) {
                 throw new InvalidArgumentException(sprintf('%s() expects $key to be a non-empty string', debug_backtrace(0, 2)[1]['function']));
@@ -1002,7 +1032,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function like($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function like($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'AND ', $side, '', $escape, $insensitiveSearch);
     }
 
@@ -1022,7 +1053,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function notLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function notLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'AND ', $side, 'NOT', $escape, $insensitiveSearch);
     }
 
@@ -1042,7 +1074,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function orLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'OR ', $side, '', $escape, $insensitiveSearch);
     }
 
@@ -1062,7 +1095,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orNotLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function orNotLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'OR ', $side, 'NOT', $escape, $insensitiveSearch);
     }
 
@@ -1081,7 +1115,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function havingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function havingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'AND ', $side, '', $escape, $insensitiveSearch, 'QBHaving');
     }
 
@@ -1100,7 +1135,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function notHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function notHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'AND ', $side, 'NOT', $escape, $insensitiveSearch, 'QBHaving');
     }
 
@@ -1119,7 +1155,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function orHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'OR ', $side, '', $escape, $insensitiveSearch, 'QBHaving');
     }
 
@@ -1138,7 +1175,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orNotHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false) {
+    public function orNotHavingLike($field, string $match = '', string $side = 'both', bool $escape = null, bool $insensitiveSearch = false)
+    {
         return $this->_like($field, $match, 'OR ', $side, 'NOT', $escape, $insensitiveSearch, 'QBHaving');
     }
 
@@ -1167,7 +1205,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    protected function _like($field, string $match = '', string $type = 'AND ', string $side = 'both', string $not = '', bool $escape = null, bool $insensitiveSearch = false, string $clause = 'QBWhere') {
+    protected function _like($field, string $match = '', string $type = 'AND ', string $side = 'both', string $not = '', bool $escape = null, bool $insensitiveSearch = false, string $clause = 'QBWhere')
+    {
         if (!is_array($field)) {
             $field = [$field => $match];
         }
@@ -1223,7 +1262,8 @@ class BaseBuilder {
      *
      * @return string     $like_statement
      */
-    protected function _like_statement(?string $prefix, string $column, ?string $not, string $bind, bool $insensitiveSearch = false): string {
+    protected function _like_statement(?string $prefix, string $column, ?string $not, string $bind, bool $insensitiveSearch = false): string
+    {
         $likeStatement = "{$prefix} {$column} {$not} LIKE :{$bind}:";
 
         if ($insensitiveSearch === true) {
@@ -1240,7 +1280,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function groupStart() {
+    public function groupStart()
+    {
         return $this->groupStartPrepare();
     }
 
@@ -1251,7 +1292,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orGroupStart() {
+    public function orGroupStart()
+    {
         return $this->groupStartPrepare('', 'OR ');
     }
 
@@ -1262,7 +1304,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function notGroupStart() {
+    public function notGroupStart()
+    {
         return $this->groupStartPrepare('NOT ');
     }
 
@@ -1273,7 +1316,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orNotGroupStart() {
+    public function orNotGroupStart()
+    {
         return $this->groupStartPrepare('NOT ', 'OR ');
     }
 
@@ -1284,7 +1328,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function groupEnd() {
+    public function groupEnd()
+    {
         return $this->groupEndPrepare();
     }
 
@@ -1295,7 +1340,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function havingGroupStart() {
+    public function havingGroupStart()
+    {
         return $this->groupStartPrepare('', 'AND ', 'QBHaving');
     }
 
@@ -1306,7 +1352,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orHavingGroupStart() {
+    public function orHavingGroupStart()
+    {
         return $this->groupStartPrepare('', 'OR ', 'QBHaving');
     }
 
@@ -1317,7 +1364,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function notHavingGroupStart() {
+    public function notHavingGroupStart()
+    {
         return $this->groupStartPrepare('NOT ', 'AND ', 'QBHaving');
     }
 
@@ -1328,7 +1376,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orNotHavingGroupStart() {
+    public function orNotHavingGroupStart()
+    {
         return $this->groupStartPrepare('NOT ', 'OR ', 'QBHaving');
     }
 
@@ -1339,7 +1388,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function havingGroupEnd() {
+    public function havingGroupEnd()
+    {
         return $this->groupEndPrepare('QBHaving');
     }
 
@@ -1354,7 +1404,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    protected function groupStartPrepare(string $not = '', string $type = 'AND ', string $clause = 'QBWhere') {
+    protected function groupStartPrepare(string $not = '', string $type = 'AND ', string $clause = 'QBWhere')
+    {
         $type = $this->groupGetType($type);
 
         $this->QBWhereGroupStarted = true;
@@ -1378,7 +1429,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    protected function groupEndPrepare(string $clause = 'QBWhere') {
+    protected function groupEndPrepare(string $clause = 'QBWhere')
+    {
         $this->QBWhereGroupStarted = false;
         $where = [
             'condition' => str_repeat(' ', $this->QBWhereGroupCount--) . ')',
@@ -1405,7 +1457,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function groupGetType(string $type): string {
+    protected function groupGetType(string $type): string
+    {
         if ($this->QBWhereGroupStarted) {
             $type = '';
             $this->QBWhereGroupStarted = false;
@@ -1424,7 +1477,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function groupBy($by, bool $escape = null) {
+    public function groupBy($by, bool $escape = null)
+    {
         is_bool($escape) || $escape = $this->db->protectIdentifiers;
 
         if (is_string($by)) {
@@ -1460,7 +1514,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function having($key, $value = null, bool $escape = null) {
+    public function having($key, $value = null, bool $escape = null)
+    {
         return $this->whereHaving('QBHaving', $key, $value, 'AND ', $escape);
     }
 
@@ -1477,7 +1532,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orHaving($key, $value = null, bool $escape = null) {
+    public function orHaving($key, $value = null, bool $escape = null)
+    {
         return $this->whereHaving('QBHaving', $key, $value, 'OR ', $escape);
     }
 
@@ -1492,7 +1548,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function orderBy(string $orderBy, string $direction = '', bool $escape = null) {
+    public function orderBy(string $orderBy, string $direction = '', bool $escape = null)
+    {
         $direction = strtoupper(trim($direction));
 
         if ($direction === 'RANDOM') {
@@ -1518,16 +1575,16 @@ class BaseBuilder {
             $qbOrderBy = [];
             foreach (explode(',', $orderBy) as $field) {
                 $qbOrderBy[] = ($direction === '' && preg_match('/\s+(ASC|DESC)$/i', rtrim($field), $match, PREG_OFFSET_CAPTURE)) ?
-                        [
-                    'field' => ltrim(substr($field, 0, $match[0][1])),
-                    'direction' => ' ' . $match[1][0],
-                    'escape' => true,
-                        ] :
-                        [
-                    'field' => trim($field),
-                    'direction' => $direction,
-                    'escape' => true,
-                ];
+                    [
+                        'field' => ltrim(substr($field, 0, $match[0][1])),
+                        'direction' => ' ' . $match[1][0],
+                        'escape' => true,
+                    ] :
+                    [
+                        'field' => trim($field),
+                        'direction' => $direction,
+                        'escape' => true,
+                    ];
             }
         }
 
@@ -1546,7 +1603,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function limit(?int $value = null, ?int $offset = 0) {
+    public function limit(?int $value = null, ?int $offset = 0)
+    {
         if (!is_null($value)) {
             $this->QBLimit = $value;
         }
@@ -1567,7 +1625,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function offset(int $offset) {
+    public function offset(int $offset)
+    {
         if (!empty($offset)) {
             $this->QBOffset = (int) $offset;
         }
@@ -1586,7 +1645,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _limit(string $sql, bool $offsetIgnore = false): string {
+    protected function _limit(string $sql, bool $offsetIgnore = false): string
+    {
         return $sql . ' LIMIT ' . (false === $offsetIgnore && $this->QBOffset ? $this->QBOffset . ', ' : '') . $this->QBLimit;
     }
 
@@ -1603,7 +1663,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function set($key, ?string $value = '', bool $escape = null) {
+    public function set($key, ?string $value = '', bool $escape = null)
+    {
         $key = $this->objectToArray($key);
 
         if (!is_array($key)) {
@@ -1634,7 +1695,8 @@ class BaseBuilder {
      *
      * @return array
      */
-    public function getSetData(bool $clean = false): array {
+    public function getSetData(bool $clean = false): array
+    {
         $data = $this->QBSet;
 
         if ($clean) {
@@ -1655,7 +1717,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    public function getCompiledSelect(bool $reset = true): string {
+    public function getCompiledSelect(bool $reset = true): string
+    {
         $select = $this->compileSelect();
 
         if ($reset === true) {
@@ -1675,7 +1738,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function compileFinalQuery(string $sql): string {
+    protected function compileFinalQuery(string $sql): string
+    {
         $query = new Query($this->db);
         $query->setQuery($sql, $this->binds, false);
 
@@ -1698,7 +1762,8 @@ class BaseBuilder {
      *
      * @return ResultInterface|false
      */
-    public function get(int $limit = null, int $offset = 0, bool $reset = true) {
+    public function get(int $limit = null, int $offset = 0, bool $reset = true)
+    {
         if (!is_null($limit)) {
             $this->limit($limit, $offset);
         }
@@ -1727,11 +1792,12 @@ class BaseBuilder {
      *
      * @return integer|string when $test = true
      */
-    public function countAll(bool $reset = true) {
+    public function countAll(bool $reset = true)
+    {
         $table = $this->QBFrom[0];
 
         $sql = $this->countString . $this->db->escapeIdentifiers('numrows') . ' FROM ' .
-                $this->db->protectIdentifiers($table, true, null, false);
+            $this->db->protectIdentifiers($table, true, null, false);
 
         if ($this->testMode) {
             return $sql;
@@ -1763,7 +1829,8 @@ class BaseBuilder {
      *
      * @return integer|string when $test = true
      */
-    public function countAllResults(bool $reset = true) {
+    public function countAllResults(bool $reset = true)
+    {
         // ORDER BY usage is often problematic here (most notably
         // on Microsoft SQL Server) and ultimately unnecessary
         // for selecting COUNT(*) ...
@@ -1823,7 +1890,8 @@ class BaseBuilder {
      *
      * @return array
      */
-    public function getCompiledQBWhere() {
+    public function getCompiledQBWhere()
+    {
         return $this->QBWhere;
     }
 
@@ -1841,7 +1909,8 @@ class BaseBuilder {
      *
      * @return ResultInterface
      */
-    public function getWhere($where = null, int $limit = null, ?int $offset = 0, bool $reset = true) {
+    public function getWhere($where = null, int $limit = null, ?int $offset = 0, bool $reset = true)
+    {
         if ($where !== null) {
             $this->where($where);
         }
@@ -1876,7 +1945,8 @@ class BaseBuilder {
      * @return integer|false Number of rows inserted or FALSE on failure
      * @throws DatabaseException
      */
-    public function insertBatch(array $set = null, bool $escape = null, int $batchSize = 100) {
+    public function insertBatch(array $set = null, bool $escape = null, int $batchSize = 100)
+    {
         if ($set === null) {
             if (empty($this->QBSet)) {
                 if (CI_DEBUG) {
@@ -1934,7 +2004,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _insertBatch(string $table, array $keys, array $values): string {
+    protected function _insertBatch(string $table, array $keys, array $values): string
+    {
         return 'INSERT ' . $this->compileIgnore('insert') . 'INTO ' . $table . ' (' . implode(', ', $keys) . ') VALUES ' . implode(', ', $values);
     }
 
@@ -1949,7 +2020,8 @@ class BaseBuilder {
      *
      * @return $this|null
      */
-    public function setInsertBatch($key, string $value = '', bool $escape = null) {
+    public function setInsertBatch($key, string $value = '', bool $escape = null)
+    {
         $key = $this->batchObjectToArray($key);
 
         if (!is_array($key)) {
@@ -2002,20 +2074,21 @@ class BaseBuilder {
      *
      * @return string|boolean
      */
-    public function getCompiledInsert(bool $reset = true) {
+    public function getCompiledInsert(bool $reset = true)
+    {
         if ($this->validateInsert() === false) {
             return false;
         }
 
         $sql = $this->_insert(
-                $this->db->protectIdentifiers(
-                        $this->QBFrom[0],
-                        true,
-                        null,
-                        false
-                ),
-                array_keys($this->QBSet),
-                array_values($this->QBSet)
+            $this->db->protectIdentifiers(
+                $this->QBFrom[0],
+                true,
+                null,
+                false
+            ),
+            array_keys($this->QBSet),
+            array_values($this->QBSet)
         );
 
         if ($reset === true) {
@@ -2037,7 +2110,8 @@ class BaseBuilder {
      *
      * @return BaseResult|Query|false
      */
-    public function insert(array $set = null, bool $escape = null) {
+    public function insert(array $set = null, bool $escape = null)
+    {
         if ($set !== null) {
             $this->set($set, '', $escape);
         }
@@ -2047,14 +2121,14 @@ class BaseBuilder {
         }
 
         $sql = $this->_insert(
-                $this->db->protectIdentifiers(
-                        $this->QBFrom[0],
-                        true,
-                        $escape,
-                        false
-                ),
-                array_keys($this->QBSet),
-                array_values($this->QBSet)
+            $this->db->protectIdentifiers(
+                $this->QBFrom[0],
+                true,
+                $escape,
+                false
+            ),
+            array_keys($this->QBSet),
+            array_values($this->QBSet)
         );
 
         if (!$this->testMode) {
@@ -2083,7 +2157,8 @@ class BaseBuilder {
      * @return boolean
      * @throws DatabaseException
      */
-    protected function validateInsert(): bool {
+    protected function validateInsert(): bool
+    {
         if (empty($this->QBSet)) {
             if (CI_DEBUG) {
                 throw new DatabaseException('You must use the "set" method to update an entry.');
@@ -2109,7 +2184,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _insert(string $table, array $keys, array $unescapedKeys): string {
+    protected function _insert(string $table, array $keys, array $unescapedKeys): string
+    {
         return 'INSERT ' . $this->compileIgnore('insert') . 'INTO ' . $table . ' (' . implode(', ', $keys) . ') VALUES (' . implode(', ', $unescapedKeys) . ')';
     }
 
@@ -2123,7 +2199,8 @@ class BaseBuilder {
      * @return BaseResult|Query|string|false
      * @throws DatabaseException
      */
-    public function replace(array $set = null) {
+    public function replace(array $set = null)
+    {
         if ($set !== null) {
             $this->set($set);
         }
@@ -2159,7 +2236,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _replace(string $table, array $keys, array $values): string {
+    protected function _replace(string $table, array $keys, array $values): string
+    {
         return 'REPLACE INTO ' . $table . ' (' . implode(', ', $keys) . ') VALUES (' . implode(', ', $values) . ')';
     }
 
@@ -2175,7 +2253,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _fromTables(): string {
+    protected function _fromTables(): string
+    {
         return implode(', ', $this->QBFrom);
     }
 
@@ -2190,7 +2269,8 @@ class BaseBuilder {
      *
      * @return string|boolean
      */
-    public function getCompiledUpdate(bool $reset = true) {
+    public function getCompiledUpdate(bool $reset = true)
+    {
         if ($this->validateUpdate() === false) {
             return false;
         }
@@ -2219,7 +2299,8 @@ class BaseBuilder {
      *
      * @return boolean    TRUE on success, FALSE on failure
      */
-    public function update(array $set = null, $where = null, int $limit = null): bool {
+    public function update(array $set = null, $where = null, int $limit = null): bool
+    {
         if ($set !== null) {
             $this->set($set);
         }
@@ -2272,7 +2353,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _update(string $table, array $values): string {
+    protected function _update(string $table, array $values): string
+    {
         $valStr = [];
 
         foreach ($values as $key => $val) {
@@ -2280,9 +2362,9 @@ class BaseBuilder {
         }
 
         return 'UPDATE ' . $this->compileIgnore('update') . $table . ' SET ' . implode(', ', $valStr)
-                . $this->compileWhereHaving('QBWhere')
-                . $this->compileOrderBy()
-                . ($this->QBLimit ? $this->_limit(' ', true) : '');
+            . $this->compileWhereHaving('QBWhere')
+            . $this->compileOrderBy()
+            . ($this->QBLimit ? $this->_limit(' ', true) : '');
     }
 
     //--------------------------------------------------------------------
@@ -2297,7 +2379,8 @@ class BaseBuilder {
      * @return boolean
      * @throws DatabaseException
      */
-    protected function validateUpdate(): bool {
+    protected function validateUpdate(): bool
+    {
         if (empty($this->QBSet)) {
             if (CI_DEBUG) {
                 throw new DatabaseException('You must use the "set" method to update an entry.');
@@ -2324,7 +2407,8 @@ class BaseBuilder {
      * @return mixed    Number of rows affected, SQL string, or FALSE on failure
      * @throws DatabaseException
      */
-    public function updateBatch(array $set = null, string $index = null, int $batchSize = 100) {
+    public function updateBatch(array $set = null, string $index = null, int $batchSize = 100)
+    {
         if ($index === null) {
             if (CI_DEBUG) {
                 throw new DatabaseException('You must specify an index to match on for batch updates.');
@@ -2364,9 +2448,9 @@ class BaseBuilder {
         $savedQBWhere = $this->QBWhere;
         for ($i = 0, $total = count($this->QBSet); $i < $total; $i += $batchSize) {
             $sql = $this->_updateBatch(
-                    $table,
-                    array_slice($this->QBSet, $i, $batchSize),
-                    $this->db->protectIdentifiers($index)
+                $table,
+                array_slice($this->QBSet, $i, $batchSize),
+                $this->db->protectIdentifiers($index)
             );
 
             if ($this->testMode) {
@@ -2397,7 +2481,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _updateBatch(string $table, array $values, string $index): string {
+    protected function _updateBatch(string $table, array $values, string $index): string
+    {
         $ids = [];
         $final = [];
 
@@ -2414,8 +2499,8 @@ class BaseBuilder {
         $cases = '';
         foreach ($final as $k => $v) {
             $cases .= $k . " = CASE \n"
-                    . implode("\n", $v) . "\n"
-                    . 'ELSE ' . $k . ' END, ';
+                . implode("\n", $v) . "\n"
+                . 'ELSE ' . $k . ' END, ';
         }
 
         $this->where($index . ' IN(' . implode(',', $ids) . ')', null, false);
@@ -2435,7 +2520,8 @@ class BaseBuilder {
      * @return $this|null
      * @throws DatabaseException
      */
-    public function setUpdateBatch($key, string $index = '', bool $escape = null) {
+    public function setUpdateBatch($key, string $index = '', bool $escape = null)
+    {
         $key = $this->batchObjectToArray($key);
 
         if (!is_array($key)) {
@@ -2476,7 +2562,8 @@ class BaseBuilder {
      *
      * @return boolean|string    TRUE on success, FALSE on failure, string on testMode
      */
-    public function emptyTable() {
+    public function emptyTable()
+    {
         $table = $this->QBFrom[0];
 
         $sql = $this->_delete($table);
@@ -2501,7 +2588,8 @@ class BaseBuilder {
      *
      * @return boolean|string    TRUE on success, FALSE on failure, string on testMode
      */
-    public function truncate() {
+    public function truncate()
+    {
         $table = $this->QBFrom[0];
 
         $sql = $this->_truncate($table);
@@ -2529,7 +2617,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _truncate(string $table): string {
+    protected function _truncate(string $table): string
+    {
         return 'TRUNCATE ' . $table;
     }
 
@@ -2544,7 +2633,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    public function getCompiledDelete(bool $reset = true): string {
+    public function getCompiledDelete(bool $reset = true): string
+    {
         $sql = $this->testMode()->delete('', null, $reset);
         $this->testMode(false);
 
@@ -2565,7 +2655,8 @@ class BaseBuilder {
      * @return mixed
      * @throws DatabaseException
      */
-    public function delete($where = '', int $limit = null, bool $resetData = true) {
+    public function delete($where = '', int $limit = null, bool $resetData = true)
+    {
         $table = $this->db->protectIdentifiers($this->QBFrom[0], true, null, false);
 
         if ($where !== '') {
@@ -2612,7 +2703,8 @@ class BaseBuilder {
      *
      * @return boolean
      */
-    public function increment(string $column, int $value = 1) {
+    public function increment(string $column, int $value = 1)
+    {
         $column = $this->db->protectIdentifiers($column);
 
         $sql = $this->_update($this->QBFrom[0], [$column => "{$column} + {$value}"]);
@@ -2630,7 +2722,8 @@ class BaseBuilder {
      *
      * @return boolean
      */
-    public function decrement(string $column, int $value = 1) {
+    public function decrement(string $column, int $value = 1)
+    {
         $column = $this->db->protectIdentifiers($column);
 
         $sql = $this->_update($this->QBFrom[0], [$column => "{$column}-{$value}"]);
@@ -2649,7 +2742,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function _delete(string $table): string {
+    protected function _delete(string $table): string
+    {
         return 'DELETE ' . $this->compileIgnore('delete') . 'FROM ' . $table . $this->compileWhereHaving('QBWhere');
     }
 
@@ -2664,7 +2758,8 @@ class BaseBuilder {
      *
      * @return string|void
      */
-    protected function trackAliases($table) {
+    protected function trackAliases($table)
+    {
         if (is_array($table)) {
             foreach ($table as $t) {
                 $this->trackAliases($t);
@@ -2703,7 +2798,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function compileSelect($selectOverride = false): string {
+    protected function compileSelect($selectOverride = false): string
+    {
         // Write the "select" portion of the query
         if ($selectOverride !== false) {
             $sql = $selectOverride;
@@ -2736,9 +2832,9 @@ class BaseBuilder {
         }
 
         $sql .= $this->compileWhereHaving('QBWhere')
-                . $this->compileGroupBy()
-                . $this->compileWhereHaving('QBHaving')
-                . $this->compileOrderBy(); // ORDER BY
+            . $this->compileGroupBy()
+            . $this->compileWhereHaving('QBHaving')
+            . $this->compileOrderBy(); // ORDER BY
         // LIMIT
         if ($this->QBLimit) {
             return $this->_limit($sql . "\n");
@@ -2759,12 +2855,13 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function compileIgnore(string $statement) {
+    protected function compileIgnore(string $statement)
+    {
         $sql = '';
 
         if (
-                $this->QBIgnore &&
-                isset($this->supportedIgnoreStatements[$statement])
+            $this->QBIgnore &&
+            isset($this->supportedIgnoreStatements[$statement])
         ) {
             $sql = trim($this->supportedIgnoreStatements[$statement]) . ' ';
         }
@@ -2787,7 +2884,8 @@ class BaseBuilder {
      *
      * @return string    SQL statement
      */
-    protected function compileWhereHaving(string $qbKey): string {
+    protected function compileWhereHaving(string $qbKey): string
+    {
         if (!empty($this->$qbKey)) {
             foreach ($this->$qbKey as &$qbkey) {
                 // Is this condition already compiled?
@@ -2802,10 +2900,10 @@ class BaseBuilder {
 
                 // Split multiple conditions
                 $conditions = preg_split(
-                        '/((?:^|\s+)AND\s+|(?:^|\s+)OR\s+)/i',
-                        $qbkey['condition'],
-                        -1,
-                        PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
+                    '/((?:^|\s+)AND\s+|(?:^|\s+)OR\s+)/i',
+                    $qbkey['condition'],
+                    -1,
+                    PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
                 );
 
                 foreach ($conditions as &$condition) {
@@ -2836,14 +2934,14 @@ class BaseBuilder {
                     }
 
                     $condition = $matches[1] . $this->db->protectIdentifiers(trim($matches[2]))
-                            . ' ' . trim($matches[3]) . $matches[4] . $matches[5];
+                        . ' ' . trim($matches[3]) . $matches[4] . $matches[5];
                 }
 
                 $qbkey = implode('', $conditions);
             }
 
             return ($qbKey === 'QBHaving' ? "\nHAVING " : "\nWHERE ")
-                    . implode("\n", $this->$qbKey);
+                . implode("\n", $this->$qbKey);
         }
 
         return '';
@@ -2862,7 +2960,8 @@ class BaseBuilder {
      *
      * @return string    SQL statement
      */
-    protected function compileGroupBy(): string {
+    protected function compileGroupBy(): string
+    {
         if (!empty($this->QBGroupBy)) {
             foreach ($this->QBGroupBy as &$groupBy) {
                 // Is it already compiled?
@@ -2892,7 +2991,8 @@ class BaseBuilder {
      *
      * @return string    SQL statement
      */
-    protected function compileOrderBy(): string {
+    protected function compileOrderBy(): string
+    {
         if (is_array($this->QBOrderBy) && !empty($this->QBOrderBy)) {
             foreach ($this->QBOrderBy as &$orderBy) {
                 if ($orderBy['escape'] !== false && !$this->isLiteral($orderBy['field'])) {
@@ -2923,7 +3023,8 @@ class BaseBuilder {
      *
      * @return mixed
      */
-    protected function objectToArray($object) {
+    protected function objectToArray($object)
+    {
         if (!is_object($object)) {
             return $object;
         }
@@ -2950,7 +3051,8 @@ class BaseBuilder {
      *
      * @return mixed
      */
-    protected function batchObjectToArray($object) {
+    protected function batchObjectToArray($object)
+    {
         if (!is_object($object)) {
             return $object;
         }
@@ -2983,11 +3085,12 @@ class BaseBuilder {
      *
      * @return boolean
      */
-    protected function isLiteral(string $str): bool {
+    protected function isLiteral(string $str): bool
+    {
         $str = trim($str);
 
         if (
-                empty($str) || ctype_digit($str) || (string) (float) $str === $str || in_array(strtoupper($str), ['TRUE', 'FALSE'], true)
+            empty($str) || ctype_digit($str) || (string) (float) $str === $str || in_array(strtoupper($str), ['TRUE', 'FALSE'], true)
         ) {
             return true;
         }
@@ -3010,7 +3113,8 @@ class BaseBuilder {
      *
      * @return $this
      */
-    public function resetQuery() {
+    public function resetQuery()
+    {
         $this->resetSelect();
         $this->resetWrite();
 
@@ -3026,7 +3130,8 @@ class BaseBuilder {
      *
      * @return void
      */
-    protected function resetRun(array $qbResetItems) {
+    protected function resetRun(array $qbResetItems)
+    {
         foreach ($qbResetItems as $item => $defaultValue) {
             $this->$item = $defaultValue;
         }
@@ -3037,7 +3142,8 @@ class BaseBuilder {
     /**
      * Resets the query builder values.  Called by the get() function
      */
-    protected function resetSelect() {
+    protected function resetSelect()
+    {
         $this->resetRun([
             'QBSelect' => [],
             'QBJoin' => [],
@@ -3068,7 +3174,8 @@ class BaseBuilder {
      *
      * Called by the insert() update() insertBatch() updateBatch() and delete() functions
      */
-    protected function resetWrite() {
+    protected function resetWrite()
+    {
         $this->resetRun([
             'QBSet' => [],
             'QBJoin' => [],
@@ -3089,7 +3196,8 @@ class BaseBuilder {
      *
      * @return boolean
      */
-    protected function hasOperator(string $str): bool {
+    protected function hasOperator(string $str): bool
+    {
         return (bool) preg_match('/(<|>|!|=|\sIS NULL|\sIS NOT NULL|\sEXISTS|\sBETWEEN|\sLIKE|\sIN\s*\(|\s)/i', trim($str));
     }
 
@@ -3103,7 +3211,8 @@ class BaseBuilder {
      *
      * @return mixed
      */
-    protected function getOperator(string $str, bool $list = false) {
+    protected function getOperator(string $str, bool $list = false)
+    {
         static $_operators;
 
         if (empty($_operators)) {
@@ -3141,7 +3250,8 @@ class BaseBuilder {
      *
      * @return string
      */
-    protected function setBind(string $key, $value = null, bool $escape = true): string {
+    protected function setBind(string $key, $value = null, bool $escape = true): string
+    {
         if (!array_key_exists($key, $this->binds)) {
             $this->binds[$key] = [
                 $value,
@@ -3171,13 +3281,18 @@ class BaseBuilder {
      *
      * @return $this
      */
-    protected function cleanClone() {
+    protected function cleanClone()
+    {
         return (clone $this)->from([], true)->resetQuery();
     }
 
     //--------------------------------------------------------------------
     //<newbgp>
-
+    public function setTableName($tableName)
+    {
+        $this->tableName = $tableName;
+        $this->from($this->tableName, true);
+    }
     /**
      * Sets a test mode status.
      *
@@ -3185,7 +3300,8 @@ class BaseBuilder {
      *
      * @return mixed
      */
-    public function rs(string $type = 'object') {
+    public function rs(string $type = 'object')
+    {
         return $this->result($type);
     }
 
@@ -3196,7 +3312,8 @@ class BaseBuilder {
      *
      * @return mixed
      */
-    public function result(string $type = 'object') {
+    public function result(string $type = 'object')
+    {
         return $this->get()->getResult($type);
     }
 
@@ -3207,7 +3324,8 @@ class BaseBuilder {
      *
      * @return mixed
      */
-    public function first(string $type = 'object') {
+    public function first(string $type = 'object')
+    {
         return $this->get()->getFirstRow($type);
     }
 
@@ -3218,7 +3336,8 @@ class BaseBuilder {
      *
      * @return mixed
      */
-    public function last(string $type = 'object') {
+    public function last(string $type = 'object')
+    {
         return $this->get()->getLastRow($type);
     }
 
@@ -3229,7 +3348,8 @@ class BaseBuilder {
      *
      * @return BaseBuilder
      */
-    function def($values = []) {
+    function def($values = [])
+    {
         $table = $this->tableName;
         $forge = ConfigDatabase::forge($this->db);
         $db = $this->db();
@@ -3248,7 +3368,8 @@ class BaseBuilder {
      *
      * @return BaseBuilder
      */
-    public function create(array $fields) {
+    public function create(array $fields)
+    {
         $table = $this->tableName;
         $forge = ConfigDatabase::forge($this->db);
         $db = $this->db;
@@ -3336,7 +3457,8 @@ class BaseBuilder {
         return $this;
     }
 
-    function whereRaw($cond) {
+    function whereRaw($cond)
+    {
         $this->where($cond, null, false);
         return $this;
     }

@@ -90,10 +90,13 @@ class ORM implements \JsonSerializable
     {
         $rc = new ReflectionClass($this->class);
         $myClass = new $this->class();
-        if($prefix){
-            $this->table .= "{$prefix}_";
-            $myClass->table .= "{$prefix}_";
+        if (!$prefix) {
+            $prefix =  implode('_', array_map('strtolower', array_slice(explode('\\', $myClass->class), 2, -1)));
+            if ($prefix)
+                $prefix .= '_';
         }
+        if ($prefix)
+            $this->builder->setTableName($prefix . $this->table);
         $factory  = DocBlockFactory::createInstance();
         $docblock = $factory->create($rc->getDocComment() ?? '');
         $tags = $docblock->getTagsByName('property');
