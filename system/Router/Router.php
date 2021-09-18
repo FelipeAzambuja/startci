@@ -113,10 +113,10 @@ class Router implements RouterInterface
 	public function __construct(RouteCollectionInterface $routes, Request $request = null)
 	{
 		$this->collection = $routes;
-
+                
 		$this->controller = $this->collection->getDefaultController();
 		$this->method     = $this->collection->getDefaultMethod();
-
+//                dd($this->controller);
 		// @phpstan-ignore-next-line
 		$this->collection->setHTTPVerb($request->getMethod() ?? strtolower($_SERVER['REQUEST_METHOD']));
 	}
@@ -145,7 +145,7 @@ class Router implements RouterInterface
 
 		// Decode URL-encoded string
 		$uri = urldecode($uri);
-
+                
 		// Restart filterInfo
 		$this->filterInfo = null;
 
@@ -371,7 +371,6 @@ class Router implements RouterInterface
 	protected function checkRoutes(string $uri): bool
 	{
 		$routes = $this->collection->getRoutes($this->collection->getHTTPVerb());
-
 		// Don't waste any time
 		if (empty($routes))
 		{

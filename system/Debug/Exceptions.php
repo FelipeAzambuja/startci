@@ -146,7 +146,7 @@ class Exceptions
 
 		$this->render($exception, $statusCode);
 
-		exit($exitCode);
+		// exit($exitCode);
 	}
 
 	//--------------------------------------------------------------------
