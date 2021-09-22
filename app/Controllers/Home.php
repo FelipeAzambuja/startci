@@ -7,6 +7,6 @@ use App\Models\Pessoas;
 class Home extends BaseController {
 
     public function index() {
-        return smarty('welcome_message');
+        return view('');
     }
 }
