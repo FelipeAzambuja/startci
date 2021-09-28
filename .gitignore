@@ -136,3 +136,11 @@ nb-configuration.xml
 /app/Views/components/
 /app/Models/PessoasTelefones.php
 /app/Models/Pessoas.php
+.user.ini
+404.html
+composer.lock
+index.html
+composer.lock
+/app/Controllers/Tests
+/app/Controllers/Tests/*
+tests
