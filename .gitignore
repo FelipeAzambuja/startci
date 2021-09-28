@@ -77,8 +77,9 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 #-------------------------
 tests/coverage*
 
-# Don't save phpunit under version control.
-phpunit
+# Don't save phpunit under version control. AUTOLOAD CI
+#phpunit 
+phpunit.result.cache
 
 #-------------------------
 # Composer

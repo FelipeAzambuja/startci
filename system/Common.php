@@ -1410,14 +1410,15 @@ function smarty($view, $data = []) {
     foreach ($data as $key => $value) {
         $smarty->assign($key, $value);
     }
-    if (file_exists(APPPATH . 'Components/'))
+    // dd(ROOTPATH.'app/View/components/');
+    if (file_exists('app/Views/components/'))
         $files = array_map(function (SplFileInfo $v)use ($smarty) {
             $value = $v->getPathname();
             if ($v->isDir() || !$v->isFile())
                 return false;
             $filename = basename($value);
             $dir = dirname($value);
-            $comp_path = APPPATH . 'Components/';
+            $comp_path = 'app/Views/components/';
             if (str_starts_with($dir, $comp_path))
                 $namespace = str_replace('/', '_', str_replace($comp_path, '', $dir)) . '_';
             else
@@ -1430,8 +1431,7 @@ function smarty($view, $data = []) {
                 return $smarty->fetch($tpl);
             });
             return true;
-        }, iterator_to_array(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(APPPATH . 'Components/'))));
-    chdir('..');
+        }, iterator_to_array(new RecursiveIteratorIterator(new RecursiveDirectoryIterator('app/Views/components/'))));
     return $smarty->fetch("app/Views/{$view}.tpl");
 }
 

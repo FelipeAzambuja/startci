@@ -1,7 +1,6 @@
 {extends file="template/html.tpl"}
 {block name="html"}
-	
-    
+
 <!-- CONTENT -->
 <section>
 
