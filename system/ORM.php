@@ -101,16 +101,19 @@ class ORM implements \JsonSerializable
         $docblock = $factory->create($rc->getDocComment() ?? '');
         $tags = $docblock->getTagsByName('property');
         $fields = [];
+
         foreach ($tags as $key => $t) {
             // $t = new Property();
             $name =  $t->getVariableName();
             $type = strval($t->getType());
             $is_relation = class_exists($type);
-            if ($is_relation) {
+            if ($is_relation && !in_array($type, ['date', 'datetime', 'timestamp'])) {
                 $c = new $type();
                 $c->create();
                 $type = $c->table . '.id';
             }
+            if ($type[0] == '\\')
+                $type = substr($type, 1);
             switch ($type) { //melhorar
                 case 'string':
                     $type = 'text';
@@ -124,10 +127,16 @@ class ORM implements \JsonSerializable
                 continue;
             $fields[$name] = $type;
         }
-        $this->builder->create($fields);
+
+        // dump($this->class,$fields);
+        try {
+            $this->builder->create($fields);
+        } catch (\Throwable $th) {
+        }
         if ($rc->hasMethod('seed'))
             if (!$this->first())
-                $this->builder->insertBatch($myClass->seed());
+                if ($seed = $myClass->seed())
+                    $this->builder->insertBatch($seed);
     }
 
     /**
