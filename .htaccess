@@ -11,7 +11,11 @@ Options All -Indexes
 	Options +FollowSymlinks
 	RewriteEngine On
 
-
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_URI} ^/_nuxt/
+	RewriteRule ^(.*)$ /nuxtjs/dist/$1 [L,NC]
+	
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)\.(gif|jpg|png|jpeg|css|js|swf|svg|woff2|ttf)$ /public/$1.$2 [L,NC]
