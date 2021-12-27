@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Models\Pessoas;
+use CodeIgniter\Controller;
 
-class Home extends BaseController {
+class Home extends Controller {
 
     public function index() {
         return smarty('welcome_message');
