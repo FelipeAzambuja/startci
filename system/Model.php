@@ -1,12 +1,12 @@
 <?php
 
 /**
- * This file is part of the CodeIgniter 4 framework.
+ * This file is part of CodeIgniter 4 framework.
  *
  * (c) CodeIgniter Foundation <admin@codeigniter.com>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  */
 
 namespace CodeIgniter;
@@ -19,6 +19,7 @@ use CodeIgniter\Database\BaseResult;
 use CodeIgniter\Database\ConnectionInterface;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\Database\Exceptions\DataException;
+use CodeIgniter\Database\Query;
 use CodeIgniter\Exceptions\ModelException;
 use CodeIgniter\I18n\Time;
 use CodeIgniter\Validation\ValidationInterface;
@@ -28,8 +29,6 @@ use ReflectionException;
 use ReflectionProperty;
 
 /**
- * Class Model
- *
  * The Model class extends BaseModel and provides additional
  * convenient features that makes working with a SQL database
  * table less painful.
@@ -39,12 +38,12 @@ use ReflectionProperty;
  *      - allow intermingling calls to the builder
  *      - removes the need to use Result object directly in most cases
  *
- * @property ConnectionInterface $db
  * @mixin BaseBuilder
+ *
+ * @property BaseConnection $db
  */
-class Model extends BaseModel implements \ArrayAccess {
-    // region Properties
-
+class Model extends BaseModel
+{
     /**
      * Name of database table
      *
@@ -62,7 +61,7 @@ class Model extends BaseModel implements \ArrayAccess {
     /**
      * Whether primary key uses auto increment.
      *
-     * @var boolean
+     * @var bool
      */
     protected $useAutoIncrement = true;
 
@@ -90,38 +89,17 @@ class Model extends BaseModel implements \ArrayAccess {
      */
     protected $escape = [];
 
-    // endregion
-    // region Constructor
+    public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
+    {
+        /**
+         * @var BaseConnection $db
+         */
+        $db = $db ?? Database::connect($this->DBGroup);
 
-    /**
-     * Model constructor.
-     *
-     * @param ConnectionInterface|null $db         DB Connection
-     * @param ValidationInterface|null $validation Validation
-     */
-    public function __construct(ConnectionInterface &$db = null, ValidationInterface $validation = null) {
+        $this->db = &$db;
+
         parent::__construct($validation);
-
-        if (is_null($db)) {
-            $this->db = Database::connect($this->DBGroup);
-        } else {
-            $this->db = &$db;
-        }
-
-        //<newbgp>
-        $c = new ReflectionClass($this);
-        $this->tempReturnType = $c->getName();
-        $this->tempUseSoftDeletes = $this->useSoftDeletes;
-        $this->tempAllowCallbacks = $this->allowCallbacks;
-        $this->protectFields = false;
-        if (!$this->table) {
-            $this->table = strtolower($c->getShortName());
-        }
-        //</newbgp>
     }
-
-    // endregion
-    // region Setters
 
     /**
      * Specify the table associated with a model
@@ -130,26 +108,25 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @return $this
      */
-    public function setTable(string $table) {
+    public function setTable(string $table)
+    {
         $this->table = $table;
 
         return $this;
     }
-
-    // endregion
-    // region Database Methods
 
     /**
      * Fetches the row of database from $this->table with a primary key
      * matching $id. This methods works only with dbCalls
      * This methods works only with dbCalls
      *
-     * @param boolean                   $singleton Single or multiple results
-     * @param array|integer|string|null $id        One primary key or an array of primary keys
+     * @param bool                  $singleton Single or multiple results
+     * @param array|int|string|null $id        One primary key or an array of primary keys
      *
-     * @return array|object|null|static    The resulting row of data, or null.
+     * @return array|object|null The resulting row of data, or null.
      */
-    protected function doFind(bool $singleton, $id = null) {
+    protected function doFind(bool $singleton, $id = null)
+    {
         $builder = $this->builder();
 
         if ($this->tempUseSoftDeletes) {
@@ -158,12 +135,12 @@ class Model extends BaseModel implements \ArrayAccess {
 
         if (is_array($id)) {
             $row = $builder->whereIn($this->table . '.' . $this->primaryKey, $id)
-                    ->get()
-                    ->getResult($this->tempReturnType);
+                ->get()
+                ->getResult($this->tempReturnType);
         } elseif ($singleton) {
             $row = $builder->where($this->table . '.' . $this->primaryKey, $id)
-                    ->get()
-                    ->getFirstRow($this->tempReturnType);
+                ->get()
+                ->getFirstRow($this->tempReturnType);
         } else {
             $row = $builder->get()->getResult($this->tempReturnType);
         }
@@ -179,7 +156,8 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @return array|null The resulting row of data, or null if no data found.
      */
-    protected function doFindColumn(string $columnName) {
+    protected function doFindColumn(string $columnName)
+    {
         return $this->select($columnName)->asArray()->find();
     }
 
@@ -188,12 +166,13 @@ class Model extends BaseModel implements \ArrayAccess {
      * all results, while optionally limiting them.
      * This methods works only with dbCalls
      *
-     * @param integer $limit  Limit
-     * @param integer $offset Offset
+     * @param int $limit  Limit
+     * @param int $offset Offset
      *
      * @return array
      */
-    protected function doFindAll(int $limit = 0, int $offset = 0) {
+    protected function doFindAll(int $limit = 0, int $offset = 0)
+    {
         $builder = $this->builder();
 
         if ($this->tempUseSoftDeletes) {
@@ -201,8 +180,8 @@ class Model extends BaseModel implements \ArrayAccess {
         }
 
         return $builder->limit($limit, $offset)
-                        ->get()
-                        ->getResult($this->tempReturnType);
+            ->get()
+            ->getResult($this->tempReturnType);
     }
 
     /**
@@ -212,15 +191,14 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @return array|object|null
      */
-    protected function doFirst() {
+    protected function doFirst()
+    {
         $builder = $this->builder();
 
         if ($this->tempUseSoftDeletes) {
             $builder->where($this->table . '.' . $this->deletedField, null);
-        } else {
-            if ($this->useSoftDeletes && empty($builder->QBGroupBy) && $this->primaryKey) {
-                $builder->groupBy($this->table . '.' . $this->primaryKey);
-            }
+        } elseif ($this->useSoftDeletes && empty($builder->QBGroupBy) && $this->primaryKey) {
+            $builder->groupBy($this->table . '.' . $this->primaryKey);
         }
 
         // Some databases, like PostgreSQL, need order
@@ -238,15 +216,16 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @param array $data Data
      *
-     * @return BaseResult|integer|string|false
+     * @return bool|Query
      */
-    protected function doInsert(array $data) {
-        $escape = $this->escape;
+    protected function doInsert(array $data)
+    {
+        $escape       = $this->escape;
         $this->escape = [];
 
         // Require non empty primaryKey when
         // not using auto-increment feature
-        if (!$this->useAutoIncrement && empty($data[$this->primaryKey])) {
+        if (! $this->useAutoIncrement && empty($data[$this->primaryKey])) {
             throw DataException::forEmptyPrimaryKey('insert');
         }
 
@@ -260,13 +239,8 @@ class Model extends BaseModel implements \ArrayAccess {
         $result = $builder->insert();
 
         // If insertion succeeded then save the insert ID
-        if ($result->resultID) {
-            if (!$this->useAutoIncrement) {
-                $this->insertID = $data[$this->primaryKey];
-            } else {
-                // @phpstan-ignore-next-line
-                $this->insertID = $this->db->insertID();
-            }
+        if ($result) {
+            $this->insertID = ! $this->useAutoIncrement ? $data[$this->primaryKey] : $this->db->insertID();
         }
 
         return $result;
@@ -276,19 +250,20 @@ class Model extends BaseModel implements \ArrayAccess {
      * Compiles batch insert strings and runs the queries, validating each row prior.
      * This methods works only with dbCalls
      *
-     * @param array|null   $set       An associative array of insert values
-     * @param boolean|null $escape    Whether to escape values and identifiers
-     * @param integer      $batchSize The size of the batch to run
-     * @param boolean      $testing   True means only number of records is returned, false will execute the query
+     * @param array|null $set       An associative array of insert values
+     * @param bool|null  $escape    Whether to escape values
+     * @param int        $batchSize The size of the batch to run
+     * @param bool       $testing   True means only number of records is returned, false will execute the query
      *
-     * @return integer|boolean Number of rows inserted or FALSE on failure
+     * @return bool|int Number of rows inserted or FALSE on failure
      */
-    protected function doInsertBatch(?array $set = null, ?bool $escape = null, int $batchSize = 100, bool $testing = false) {
+    protected function doInsertBatch(?array $set = null, ?bool $escape = null, int $batchSize = 100, bool $testing = false)
+    {
         if (is_array($set)) {
             foreach ($set as $row) {
                 // Require non empty primaryKey when
                 // not using auto-increment feature
-                if (!$this->useAutoIncrement && empty($row[$this->primaryKey])) {
+                if (! $this->useAutoIncrement && empty($row[$this->primaryKey])) {
                     throw DataException::forEmptyPrimaryKey('insertBatch');
                 }
             }
@@ -301,13 +276,12 @@ class Model extends BaseModel implements \ArrayAccess {
      * Updates a single record in $this->table.
      * This methods works only with dbCalls
      *
-     * @param integer|array|string|null $id   ID
-     * @param array|null                $data Data
-     *
-     * @return boolean
+     * @param array|int|string|null $id
+     * @param array|null            $data
      */
-    protected function doUpdate($id = null, $data = null): bool {
-        $escape = $this->escape;
+    protected function doUpdate($id = null, $data = null): bool
+    {
+        $escape       = $this->escape;
         $this->escape = [];
 
         $builder = $this->builder();
@@ -330,14 +304,15 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @param array|null  $set       An associative array of update values
      * @param string|null $index     The where key
-     * @param integer     $batchSize The size of the batch to run
-     * @param boolean     $returnSQL True means SQL is returned, false will execute the query
-     *
-     * @return mixed    Number of rows affected or FALSE on failure
+     * @param int         $batchSize The size of the batch to run
+     * @param bool        $returnSQL True means SQL is returned, false will execute the query
      *
      * @throws DatabaseException
+     *
+     * @return mixed Number of rows affected or FALSE on failure
      */
-    protected function doUpdateBatch(array $set = null, string $index = null, int $batchSize = 100, bool $returnSQL = false) {
+    protected function doUpdateBatch(?array $set = null, ?string $index = null, int $batchSize = 100, bool $returnSQL = false)
+    {
         return $this->builder()->testMode($returnSQL)->updateBatch($set, $index, $batchSize);
     }
 
@@ -346,31 +321,30 @@ class Model extends BaseModel implements \ArrayAccess {
      * the table's primaryKey
      * This methods works only with dbCalls
      *
-     * @param integer|string|array|null $id    The rows primary key(s)
-     * @param boolean                   $purge Allows overriding the soft deletes setting.
-     *
-     * @return BaseResult|boolean
+     * @param array|int|string|null $id    The rows primary key(s)
+     * @param bool                  $purge Allows overriding the soft deletes setting.
      *
      * @throws DatabaseException
+     *
+     * @return bool|string
      */
-    protected function doDelete($id = null, bool $purge = false) {
+    protected function doDelete($id = null, bool $purge = false)
+    {
         $builder = $this->builder();
 
         if ($id) {
             $builder = $builder->whereIn($this->primaryKey, $id);
         }
 
-        if ($this->useSoftDeletes && !$purge) {
+        if ($this->useSoftDeletes && ! $purge) {
             if (empty($builder->getCompiledQBWhere())) {
                 if (CI_DEBUG) {
                     throw new DatabaseException(
-                                    'Deletes are not allowed unless they contain a "where" or "like" clause.'
+                        'Deletes are not allowed unless they contain a "where" or "like" clause.'
                     );
                 }
 
-                // @codeCoverageIgnoreStart
-                return false;
-                // @codeCoverageIgnoreEnd
+                return false; // @codeCoverageIgnore
             }
 
             $set[$this->deletedField] = $this->setDate();
@@ -379,12 +353,10 @@ class Model extends BaseModel implements \ArrayAccess {
                 $set[$this->updatedField] = $this->setDate();
             }
 
-            $result = $builder->update($set);
-        } else {
-            $result = $builder->delete();
+            return $builder->update($set);
         }
 
-        return $result;
+        return $builder->delete();
     }
 
     /**
@@ -392,22 +364,22 @@ class Model extends BaseModel implements \ArrayAccess {
      * through soft deletes (deleted = 1)
      * This methods works only with dbCalls
      *
-     * @return boolean|mixed
+     * @return bool|mixed
      */
-    protected function doPurgeDeleted() {
+    protected function doPurgeDeleted()
+    {
         return $this->builder()
-                        ->where($this->table . '.' . $this->deletedField . ' IS NOT NULL')
-                        ->delete();
+            ->where($this->table . '.' . $this->deletedField . ' IS NOT NULL')
+            ->delete();
     }
 
     /**
      * Works with the find* methods to return only the rows that
      * have been deleted.
      * This methods works only with dbCalls
-     *
-     * @return void
      */
-    protected function doOnlyDeleted() {
+    protected function doOnlyDeleted()
+    {
         $this->builder()->where($this->table . '.' . $this->deletedField . ' IS NOT NULL');
     }
 
@@ -416,22 +388,33 @@ class Model extends BaseModel implements \ArrayAccess {
      * This methods works only with dbCalls
      *
      * @param array|null $data      Data
-     * @param boolean    $returnSQL Set to true to return Query String
+     * @param bool       $returnSQL Set to true to return Query String
      *
      * @return mixed
      */
-    protected function doReplace(array $data = null, bool $returnSQL = false) {
+    protected function doReplace(?array $data = null, bool $returnSQL = false)
+    {
         return $this->builder()->testMode($returnSQL)->replace($data);
     }
 
     /**
      * Grabs the last error(s) that occurred from the Database connection.
+     * The return array should be in the following format:
+     *  ['source' => 'message']
      * This methods works only with dbCalls
      *
-     * @return array|null
+     * @return array<string,string>
      */
-    protected function doErrors() {
-        return $this->db->error();
+    protected function doErrors()
+    {
+        // $error is always ['code' => string|int, 'message' => string]
+        $error = $this->db->error();
+
+        if ((int) $error['code'] === 0) {
+            return [];
+        }
+
+        return [get_class($this->db) => $error['message']];
     }
 
     /**
@@ -439,14 +422,29 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @param array|object $data Data
      *
-     * @return integer|array|string|null
+     * @return array|int|string|null
+     *
+     * @deprecated Use getIdValue() instead. Will be removed in version 5.0.
      */
-    protected function idValue($data) {
+    protected function idValue($data)
+    {
+        return $this->getIdValue($data);
+    }
+
+    /**
+     * Returns the id value for the data array or object
+     *
+     * @param array|object $data Data
+     *
+     * @return array|int|string|null
+     */
+    public function getIdValue($data)
+    {
         if (is_object($data) && isset($data->{$this->primaryKey})) {
             return $data->{$this->primaryKey};
         }
 
-        if (is_array($data) && !empty($data[$this->primaryKey])) {
+        if (is_array($data) && ! empty($data[$this->primaryKey])) {
             return $data[$this->primaryKey];
         }
 
@@ -459,22 +457,18 @@ class Model extends BaseModel implements \ArrayAccess {
      * determine the rows to operate on.
      * This methods works only with dbCalls
      *
-     * @param integer $size     Size
-     * @param Closure $userFunc Callback Function
-     *
-     * @return void
-     *
      * @throws DataException
      */
-    public function chunk(int $size, Closure $userFunc) {
-        $total = $this->builder()->countAllResults(false);
+    public function chunk(int $size, Closure $userFunc)
+    {
+        $total  = $this->builder()->countAllResults(false);
         $offset = 0;
 
         while ($offset <= $total) {
             $builder = clone $this->builder();
-            $rows = $builder->get($size, $offset);
+            $rows    = $builder->get($size, $offset);
 
-            if (!$rows) {
+            if (! $rows) {
                 throw DataException::forEmptyDataset('chunk');
             }
 
@@ -497,12 +491,10 @@ class Model extends BaseModel implements \ArrayAccess {
     /**
      * Override countAllResults to account for soft deleted accounts.
      *
-     * @param boolean $reset Reset
-     * @param boolean $test  Test
-     *
      * @return mixed
      */
-    public function countAllResults(bool $reset = true, bool $test = false) {
+    public function countAllResults(bool $reset = true, bool $test = false)
+    {
         if ($this->tempUseSoftDeletes) {
             $this->builder()->where($this->table . '.' . $this->deletedField, null);
         }
@@ -510,23 +502,22 @@ class Model extends BaseModel implements \ArrayAccess {
         // When $reset === false, the $tempUseSoftDeletes will be
         // dependant on $useSoftDeletes value because we don't
         // want to add the same "where" condition for the second time
-        $this->tempUseSoftDeletes = $reset ? $this->useSoftDeletes : ($this->useSoftDeletes ? false : $this->useSoftDeletes);
+        $this->tempUseSoftDeletes = $reset
+            ? $this->useSoftDeletes
+            : ($this->useSoftDeletes ? false : $this->useSoftDeletes);
 
         return $this->builder()->testMode($test)->countAllResults($reset);
     }
 
-    // endregion
-    // region Builder
-
     /**
      * Provides a shared instance of the Query Builder.
      *
-     * @param string|null $table Table name
+     * @throws ModelException
      *
      * @return BaseBuilder
-     * @throws ModelException
      */
-    public function builder(?string $table = null) {
+    public function builder(?string $table = null)
+    {
         // Check for an existing Builder
         if ($this->builder instanceof BaseBuilder) {
             // Make sure the requested table matches the builder
@@ -547,7 +538,7 @@ class Model extends BaseModel implements \ArrayAccess {
         $table = empty($table) ? $this->table : $table;
 
         // Ensure we have a good db connection
-        if (!$this->db instanceof BaseConnection) {
+        if (! $this->db instanceof BaseConnection) {
             $this->db = Database::connect($this->DBGroup);
         }
 
@@ -566,16 +557,17 @@ class Model extends BaseModel implements \ArrayAccess {
      * data here. This allows it to be used with any of the other
      * builder methods and still get validated data, like replace.
      *
-     * @param mixed        $key    Field name, or an array of field/value pairs
-     * @param string|null  $value  Field value, if $key is a single field
-     * @param boolean|null $escape Whether to escape values and identifiers
+     * @param mixed     $key    Field name, or an array of field/value pairs
+     * @param mixed     $value  Field value, if $key is a single field
+     * @param bool|null $escape Whether to escape values
      *
      * @return $this
      */
-    public function set($key, ?string $value = '', ?bool $escape = null) {
+    public function set($key, $value = '', ?bool $escape = null)
+    {
         $data = is_array($key) ? $key : [$key => $value];
 
-        foreach ($data as $k => $v) {
+        foreach (array_keys($data) as $k) {
             $this->tempData['escape'][$k] = $escape;
         }
 
@@ -584,38 +576,41 @@ class Model extends BaseModel implements \ArrayAccess {
         return $this;
     }
 
-    // endregion
-    // region Overrides
-    // region CRUD & Finders
-
     /**
      * This method is called on save to determine if entry have to be updated
      * If this method return false insert operation will be executed
      *
      * @param array|object $data Data
-     *
-     * @return boolean
      */
-    protected function shouldUpdate($data): bool {
-        // When useAutoIncrement feature is disabled check
+    protected function shouldUpdate($data): bool
+    {
+        if (parent::shouldUpdate($data) === false) {
+            return false;
+        }
+
+        if ($this->useAutoIncrement === true) {
+            return true;
+        }
+
+        // When useAutoIncrement feature is disabled, check
         // in the database if given record already exists
-        return parent::shouldUpdate($data) &&
-                ($this->useAutoIncrement ? true : $this->where($this->primaryKey, $this->idValue($data))->countAllResults() === 1);
+        return $this->where($this->primaryKey, $this->getIdValue($data))->countAllResults() === 1;
     }
 
     /**
      * Inserts data into the database. If an object is provided,
      * it will attempt to convert it to an array.
      *
-     * @param array|object|null $data     Data
-     * @param boolean           $returnID Whether insert ID should be returned or not.
-     *
-     * @return BaseResult|object|integer|string|false
+     * @param array|object|null $data
+     * @param bool              $returnID Whether insert ID should be returned or not.
      *
      * @throws ReflectionException
+     *
+     * @return BaseResult|false|int|object|string
      */
-    public function insert($data = null, bool $returnID = true) {
-        if (!empty($this->tempData['data'])) {
+    public function insert($data = null, bool $returnID = true)
+    {
+        if (! empty($this->tempData['data'])) {
             if (empty($data)) {
                 $data = $this->tempData['data'] ?? null;
             } else {
@@ -624,7 +619,7 @@ class Model extends BaseModel implements \ArrayAccess {
             }
         }
 
-        $this->escape = $this->tempData['escape'] ?? [];
+        $this->escape   = $this->tempData['escape'] ?? [];
         $this->tempData = [];
 
         return parent::insert($data, $returnID);
@@ -634,15 +629,14 @@ class Model extends BaseModel implements \ArrayAccess {
      * Updates a single record in the database. If an object is provided,
      * it will attempt to convert it into an array.
      *
-     * @param integer|array|string|null $id   ID
-     * @param array|object|null         $data Data
-     *
-     * @return boolean
+     * @param array|int|string|null $id
+     * @param array|object|null     $data
      *
      * @throws ReflectionException
      */
-    public function update($id = null, $data = null): bool {
-        if (!empty($this->tempData['data'])) {
+    public function update($id = null, $data = null): bool
+    {
+        if (! empty($this->tempData['data'])) {
             if (empty($data)) {
                 $data = $this->tempData['data'] ?? null;
             } else {
@@ -651,44 +645,37 @@ class Model extends BaseModel implements \ArrayAccess {
             }
         }
 
-        $this->escape = $this->tempData['escape'] ?? [];
+        $this->escape   = $this->tempData['escape'] ?? [];
         $this->tempData = [];
 
         return parent::update($id, $data);
     }
 
-    // endregion
-    // region Utility
-
     /**
      * Takes a class an returns an array of it's public and protected
      * properties as an array with raw values.
      *
-     * @param string|object $data        Data
-     * @param boolean       $onlyChanged Only Changed Property
-     * @param boolean       $recursive   If true, inner entities will be casted as array as well
-     *
-     * @return array|null Array
+     * @param object|string $data
+     * @param bool          $recursive If true, inner entities will be casted as array as well
      *
      * @throws ReflectionException
+     *
+     * @return array|null Array
      */
-    protected function objectToRawArray($data, bool $onlyChanged = true, bool $recursive = false): ?array {
+    protected function objectToRawArray($data, bool $onlyChanged = true, bool $recursive = false): ?array
+    {
         $properties = parent::objectToRawArray($data, $onlyChanged);
 
-        if (method_exists($data, 'toRawArray')) {
-            // Always grab the primary key otherwise updates will fail.
-            if (
-                    !empty($properties) && !empty($this->primaryKey) && !in_array($this->primaryKey, $properties, true) && !empty($data->{$this->primaryKey})
-            ) {
-                $properties[$this->primaryKey] = $data->{$this->primaryKey};
-            }
+        // Always grab the primary key otherwise updates will fail.
+        if (
+            method_exists($data, 'toRawArray') && (! empty($properties) && ! empty($this->primaryKey) && ! in_array($this->primaryKey, $properties, true)
+            && ! empty($data->{$this->primaryKey}))
+        ) {
+            $properties[$this->primaryKey] = $data->{$this->primaryKey};
         }
 
         return $properties;
     }
-
-    // endregion
-    // region Magic
 
     /**
      * Provides/instantiates the builder/db connection and model's table/primary key names and return type.
@@ -697,13 +684,14 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @return mixed
      */
-    public function __get(string $name) {
+    public function __get(string $name)
+    {
         if (parent::__isset($name)) {
             return parent::__get($name);
         }
 
-        if (isset($this->builder()->$name)) {
-            return $this->builder()->$name;
+        if (isset($this->builder()->{$name})) {
+            return $this->builder()->{$name};
         }
 
         return null;
@@ -713,45 +701,33 @@ class Model extends BaseModel implements \ArrayAccess {
      * Checks for the existence of properties across this model, builder, and db connection.
      *
      * @param string $name Name
-     *
-     * @return boolean
      */
-    public function __isset(string $name): bool {
+    public function __isset(string $name): bool
+    {
         if (parent::__isset($name)) {
             return true;
         }
 
-        if (isset($this->builder()->$name)) {
-            return true;
-        }
-
-        return false;
+        return isset($this->builder()->{$name});
     }
 
     /**
      * Provides direct access to method in the builder (if available)
      * and the database connection.
      *
-     * @param string $name   Name
-     * @param array  $params Params
-     *
-     * @return $this|null
+     * @return mixed
      */
-    public function __call(string $name, array $params) {
-        $result = parent::__call($name, $params);
+    public function __call(string $name, array $params)
+    {
+        $builder = $this->builder();
+        $result  = null;
 
-        if ($result === null && method_exists($builder = $this->builder(), $name)) {
+        if (method_exists($this->db, $name)) {
+            $result = $this->db->{$name}(...$params);
+        } elseif (method_exists($builder, $name)) {
             $result = $builder->{$name}(...$params);
-        }
-
-        if (empty($result)) {
-            if (!method_exists($this->builder(), $name)) {
-                $className = static::class;
-
-                throw new BadMethodCallException('Call to undefined method ' . $className . '::' . $name);
-            }
-
-            return $result;
+        } else {
+            throw new BadMethodCallException('Call to undefined method ' . static::class . '::' . $name);
         }
 
         if ($result instanceof BaseBuilder) {
@@ -761,20 +737,12 @@ class Model extends BaseModel implements \ArrayAccess {
         return $result;
     }
 
-    // endregion
-    // endregion
-    // region Deprecated
-
     /**
      * Takes a class an returns an array of it's public and protected
      * properties as an array suitable for use in creates and updates.
      *
-     * @param string|object $data        Data
-     * @param string|null   $primaryKey  Primary Key
-     * @param string        $dateFormat  Date Format
-     * @param boolean       $onlyChanged Only Changed
-     *
-     * @return array
+     * @param object|string $data
+     * @param string|null   $primaryKey
      *
      * @throws ReflectionException
      *
@@ -782,17 +750,18 @@ class Model extends BaseModel implements \ArrayAccess {
      *
      * @deprecated since 4.1
      */
-    public static function classToArray($data, $primaryKey = null, string $dateFormat = 'datetime', bool $onlyChanged = true): array {
+    public static function classToArray($data, $primaryKey = null, string $dateFormat = 'datetime', bool $onlyChanged = true): array
+    {
         if (method_exists($data, 'toRawArray')) {
             $properties = $data->toRawArray($onlyChanged);
 
             // Always grab the primary key otherwise updates will fail.
-            if (!empty($properties) && !empty($primaryKey) && !in_array($primaryKey, $properties, true) && !empty($data->{$primaryKey})) {
+            if (! empty($properties) && ! empty($primaryKey) && ! in_array($primaryKey, $properties, true) && ! empty($data->{$primaryKey})) {
                 $properties[$primaryKey] = $data->{$primaryKey};
             }
         } else {
             $mirror = new ReflectionClass($data);
-            $props = $mirror->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+            $props  = $mirror->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
 
             $properties = [];
 
@@ -813,12 +782,15 @@ class Model extends BaseModel implements \ArrayAccess {
                         case 'datetime':
                             $converted = $value->format('Y-m-d H:i:s');
                             break;
+
                         case 'date':
                             $converted = $value->format('Y-m-d');
                             break;
+
                         case 'int':
                             $converted = $value->getTimestamp();
                             break;
+
                         default:
                             $converted = (string) $value;
                     }
@@ -830,25 +802,4 @@ class Model extends BaseModel implements \ArrayAccess {
 
         return $properties;
     }
-
-    //<newbgp>
-    public function offsetExists($offset): bool {
-        return property_exists($offset);
-//        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset) {
-        return $this->{$offset};
-    }
-
-    public function offsetSet($offset, $value): void {
-        $this->{$offset} = $value;
-    }
-
-    public function offsetUnset($offset): void {
-        $this->{$offset} = null;
-    }
-
-    //</newbgp>
-    // endregion
 }
