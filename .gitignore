@@ -144,3 +144,4 @@ composer.lock
 /app/Controllers/Tests
 /app/Controllers/Tests/*
 tests
+app/Views/teste.php
