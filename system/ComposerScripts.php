@@ -69,6 +69,7 @@ final class ComposerScripts
      */
     public static function postUpdate()
     {
+        return;
         self::recursiveDelete(self::$path);
 
         foreach (self::$dependencies as $dependency) {

@@ -10,13 +10,12 @@
         "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "psr/log": "*",
         "laminas/laminas-escaper": "*",
         "eighty8/stringy": "*",
         "smarty/smarty": "*",
         "adhocore/cron-expr": "*",
         "symfony/process": "*",
-        "fakerphp/faker": "*",
+        "fakerphp/faker": "^1.17",
         "nesbot/carbon": "*",
         "tightenco/collect": "*",
         "phpdocumentor/reflection-docblock": "*",
@@ -28,8 +27,7 @@
         "mikey179/vfsstream": "1.6.*",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "^3.3",
-        "eaglewu/swoole-ide-helper": "dev-master",
-        "pestphp/pest": "^1.19"
+        "eaglewu/swoole-ide-helper": "dev-master"
     },
     "autoload": {
         "psr-4": {
