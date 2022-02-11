@@ -123,7 +123,7 @@ nb-configuration.xml
 .vscode/
 
 /results/
-/phpunit*.xml
+#/phpunit*.xml
 /.phpunit.*.cache
 
 .cache/*
@@ -136,6 +136,7 @@ nb-configuration.xml
 /app/Views/components/
 /app/Models/PessoasTelefones.php
 /app/Models/Pessoas.php
+Teste.php
 .user.ini
 404.html
 composer.lock
