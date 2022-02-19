@@ -107,6 +107,13 @@ class Orm extends BaseCommand
         $file .= "    }" . PHP_EOL;
         $file .= "" . PHP_EOL;
         $file .= "}" . PHP_EOL;
+        $file .= "" . PHP_EOL;
+        $file .= "/** ". PHP_EOL;
+        $file .= " * @return $className" . PHP_EOL;
+        $file .= " */" . PHP_EOL;
+        $file .= "function model_$table(){" . PHP_EOL;
+        $file .= "  return new $className();" . PHP_EOL;
+        $file .= "}" . PHP_EOL;
         if (file_exists("../app/Models/$className.php"))
             if (strtoupper(CLI::prompt('Overwrite file ? (y,n)', null, 'required')) != "Y")
                 return false;
