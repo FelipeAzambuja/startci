@@ -283,7 +283,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Cookie::$secure property instead.
      */
-    public $cookieSecure = false;
+    public $cookieSecure = true;
 
     /**
      * --------------------------------------------------------------------------

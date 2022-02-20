@@ -22,7 +22,8 @@ CI_ENVIRONMENT = development
 
 app.baseURL = 'https://startci.test'
 # app.forceGlobalSecureRequests = false
-
+app.ssl_key = 'C:/laragon/etc/ssl/laragon.key'
+app.ssl_cert = 'C:/laragon/etc/ssl/laragon.crt'
 # app.sessionDriver = 'CodeIgniter\Session\Handlers\FileHandler'
 # app.sessionCookieName = 'ci_session'
 # app.sessionSavePath = NULL

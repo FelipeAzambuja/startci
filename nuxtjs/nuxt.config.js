@@ -1,6 +1,5 @@
-const env = (require('dotenv')).config({
-  path:'../.env'
-});
+const env = require('dotenv').config({ path: '../.env' });
+const fs = require('fs');
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
@@ -46,6 +45,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -53,7 +53,39 @@ export default {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: env.parsed['app.baseURL'],
   },
-
+  router: {
+    mode: 'hash'
+  },
+  auth:{
+    strategies:{
+      local:{}
+    }
+  },
+  // auth: {
+  //   strategies: {
+  //     local: {
+  //       token: {
+  //         property: 'token',
+  //         global: true,
+  //       },
+  //       user: {
+  //         property: 'user',
+  //         autoFetch: true
+  //       },
+  //       endpoints: {
+  //         login: { url: '/api/auth/login', method: 'post' },
+  //         logout: { url: '/api/auth/logout', method: 'post' },
+  //         user: { url: '/api/auth/user', method: 'get' }
+  //       }
+  //     }
+  //   }
+  // },
+  // server: {
+  //   https: {
+  //     key: fs.readFileSync(env.parsed['app.ssl_key']),
+  //     cert: fs.readFileSync(env.parsed['app.ssl_cert'])
+  //   }
+  // },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     transpile: [/^element-ui/],

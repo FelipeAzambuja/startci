@@ -74,6 +74,12 @@ class ORM implements \JsonSerializable
     public $class;
     public $table = '';
     public $autoload = [];
+/**
+ * @return static
+ */
+    static function instance()
+    {
+    }
 
     public function __construct($db = null)
     {
