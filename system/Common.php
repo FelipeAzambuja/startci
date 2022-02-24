@@ -1263,8 +1263,33 @@ function form_error($field, $template = 'single') {
     echo valid()->showError($field, $template);
 }
 
-function user($table = 'users') {
-    return table($table)->where('id', session()->get('id'))->get()->getFirstRow();
+function jwt_encode($data)
+{
+    return JWT::encode($data, env('encryption.key'), 'HS256');
+}
+
+function jwt_decode($data)
+{
+    return JWT::decode($data, new Key(env('encryption.key'), 'HS256'));
+}
+
+function user($table = 'users')
+{
+    $id = null;
+    if (session()->has('id'))
+        $id = session()->get('id');
+    try {
+        // s(substr(getallheaders()['Authorization'], strlen("Bearer ")));
+        // die;
+        if (isset(getallheaders()['Authorization']))
+            $id = jwt_decode(substr(getallheaders()['Authorization'], strlen("Bearer ")));
+    } catch (\Throwable $th) {
+        throw $th;
+    }
+    if ($id)
+        return table($table)->where('id', $id)->get()->getFirstRow();
+    else
+        return false;
 }
 
 /**
@@ -1461,7 +1486,7 @@ function assets_cache($file) {
 }
 
 function smarty($view, $data = []) {
-    die("not compatible 8.1 https://github.com/smarty-php/smarty/issues/671");
+    // die("not compatible 8.1 https://github.com/smarty-php/smarty/issues/671");
     $smarty = new Smarty();
     @mkdir('writable/cache/smarty/templates_c/', 0777, true);
     @mkdir('writable/cache/smarty/cache/', 0777, true);

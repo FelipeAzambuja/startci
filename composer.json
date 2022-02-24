@@ -6,29 +6,20 @@
     "license": "MIT",
     "require": {
         "php": ">=7.2",
-        "ext-curl": "*",
-        "ext-intl": "*",
-        "ext-json": "*",
-        "ext-mbstring": "*",
-        "laminas/laminas-escaper": "*",
-        "eighty8/stringy": "*",
-        "smarty/smarty": "*",
-        "adhocore/cron-expr": "*",
-        "symfony/process": "*",
-        "fakerphp/faker": "^1.17",
-        "nesbot/carbon": "*",
-        "tightenco/collect": "*",
-        "phpdocumentor/reflection-docblock": "*",
-        "swoole/ide-helper": "*",
-        "chrome-php/chrome": "*"
+        "smarty/smarty": "^4.1",
+        "adhocore/cron-expr": "^1.1",
+        "symfony/process": "^6.0",
+        "fakerphp/faker": "^1.19",
+        "nesbot/carbon": "^2.57",
+        "tightenco/collect": "^9.0",
+        "phpdocumentor/reflection-docblock": "^5.3",
+        "firebase/php-jwt": "^6.0"
     },
     "require-dev": {
         "codeigniter4/codeigniter4-standard": "^1.0",
         "mikey179/vfsstream": "1.6.*",
         "phpunit/phpunit": "*",
-        "squizlabs/php_codesniffer": "^3.3",
-        "eaglewu/swoole-ide-helper": "dev-master",
-        "pestphp/pest": "^1.21"
+        "squizlabs/php_codesniffer": "^3.3"
     },
     "autoload": {
         "psr-4": {
@@ -46,10 +37,5 @@
         "forum": "http://forum.codeigniter.com/",
         "source": "https://github.com/codeigniter4/CodeIgniter4",
         "slack": "https://codeigniterchat.slack.com"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
     }
 }

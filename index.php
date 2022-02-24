@@ -1,7 +1,13 @@
 <?php
-// var_dump($_SERVER['DOCUMENT_ROOT']);
-// Valid PHP Version?
+if (isset($_SERVER['HTTP_ORIGIN']))
+header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
+header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+header('Access-Control-Allow-Credentials: true');
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+die;
 $minPHPVersion = '7.2';
+
 if (phpversion() < $minPHPVersion) {
 	die("Your PHP version must be {$minPHPVersion} or higher to run CodeIgniter. Current version: " . phpversion());
 }

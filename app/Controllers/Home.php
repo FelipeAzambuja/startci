@@ -8,6 +8,7 @@ class Home extends Controller
 {
     public function index()
     {
+        // return file_get_contents('nuxtjs/dist/index.html');
         return view('welcome_message');
     }
 }
