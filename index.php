@@ -6,8 +6,8 @@ header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 header('Access-Control-Allow-Credentials: true');
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
 die;
+// Valid PHP Version?
 $minPHPVersion = '7.2';
-
 if (phpversion() < $minPHPVersion) {
 	die("Your PHP version must be {$minPHPVersion} or higher to run CodeIgniter. Current version: " . phpversion());
 }
