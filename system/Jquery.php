@@ -16,9 +16,11 @@ namespace CodeIgniter;
 class Jquery {
 
     var $selector = '';
+    var $js = null;
 
     public function __construct($selector = '') {
         $this->selector = $selector;
+        $this->js = js();
     }
 
     public function __call($name, $arguments) {

@@ -1231,11 +1231,15 @@ function is_get() {
     return ($_SERVER['REQUEST_METHOD'] ?? 'POST') === 'GET';
 }
 
-function form($key = null, $default = null) {
+function form($key = null, $default = null)
+{
+    $_JSON = [];
+    if (apache_request_headers()['Content-Type'] ?? '' == 'application/json')
+        $_JSON = json_decode(file_get_contents('php://input'), true) ?? [];
     if ($key != null) {
         return isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
     } else {
-        return $_REQUEST;
+        return $_GET + $_POST + $_JSON;
     }
 }
 
@@ -1554,6 +1558,397 @@ function vue($varname = 'vue'): \CodeIgniter\Vue {
 function faker($locale = null) {
 
     return \Faker\Factory::create($locale ?? 'pt_br');
+}
+
+function form_open($plus = '') {
+    echo '<form ' . $plus . '>';
+}
+
+function form_close() {
+    echo '</form>';
+}
+
+function row($class = "row", $id = "") {
+    global $ci_row;
+    if ($ci_row == true||$ci_row == null) {
+        echo "<div id=\"{$id}\" class=\"{$class}\">";
+        $ci_row = false;
+    } else {
+        echo "</div>";
+        $ci_row = true;
+    }
+}
+
+function label_check($id, $texto, $plus = '', $size = 12) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = '';
+    }
+    ob_start();
+    check($id, $texto, $plus, 12);
+    _form_error_html($id);
+    echo div(ob_get_clean(), $size, ' mt-4 ');
+}
+
+function label_button($texto, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = '';
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="btn btn-primary form-control label_button mt-4" ';
+    }
+    ob_start();
+    ?>
+    <button data-button="true" type="button" <?= $plus ?>><?= $texto ?></button>
+    <?php
+    $html = ob_get_contents();
+    ob_end_clean();
+    echo div($html, $size);
+}
+
+function button($texto, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = '';
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="btn btn-primary form-control" ';
+    }
+    ob_start();
+    ?>
+    <button data-button="true" type="button" <?= $plus ?>><?= $texto ?></button>
+    <?php
+    $html = ob_get_contents();
+    ob_end_clean();
+    echo div($html, $size);
+}
+
+/**
+ * 
+ * @param type $id identificação
+ * @param type $texto Texto
+ * @param type $grupo Agrupamento 
+ * @param type $plus atributos adicionais
+ * @param type $size colunas
+ * @return type
+ */
+function radio($id, $texto, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = '';
+    }
+    $value = "value='$texto'";
+    if (!str_contains($plus, "value")) {
+        $value = "";
+    }
+    $html = "<label style='cursor:pointer;margin-top:5px' data-radio='true' ><input name='$id' $plus type='radio'  $value  />  {$texto}</label>";
+    echo div($html, $size);
+}
+
+/**
+ * Cria um input tipo checkbox
+ * @param type $id identificador
+ * @param type $texto Texto
+ * @param type $grupo Para agrupar em array, se vazio envia 'true' ou 'false'
+ * @param type $plus atributos adicionais
+ * @param type $size tamanho da coluna
+ * @return type
+ */
+function check($id, $texto, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = '';
+    }
+    $value = "value = '$texto'";
+
+    if (!str_contains($plus, "value")) {
+        $value = "";
+    }
+    $html = "<label style='margin-top:5px'><input name='$id' type='checkbox' $value $plus  />  {$texto}</label>";
+    echo div($html, $size);
+}
+
+function combo($id, $itens, $valoresItens = array(), $plus = "", $size = 3) {
+    if (is_numeric($valoresItens)) {
+        $size = $valoresItens;
+        $valoresItens = array();
+        $plus = '';
+    }
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = '';
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    $select_value = null;
+    if (str_contains($plus, "value=")) {
+        $attrs = _form_parse_attr($plus);
+        $select_value = strval($attrs['value']);
+    }
+    $retorno = "";
+    $retorno .= "<select name='{$id}' $plus >";
+    $contador = 0;
+    foreach ($itens as $value) {
+        if (count($valoresItens) > 0) :
+            $retorno .= "<option " . (($value == $select_value) ? 'selected' : '') . " value='" . $value . "'>" . $valoresItens[$contador] . "</option>";
+        else :
+            $retorno .= "<option " . (($value == $select_value) ? 'selected' : '') . " value='" . $value . "'>" . $value . "</option>";
+        endif;
+        $contador++;
+    }
+    $retorno .= "</select>";
+    echo div($retorno, $size);
+}
+
+function label($texto = "", $size = 1) {
+    $retorno = "<label data-label='true' class='control-label'>$texto</label>";
+    echo div($retorno, $size);
+}
+
+function text($id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    if (!str_contains($plus, "type")) {
+        $html = "<input name='{$id}' type='text' $plus />";
+    } else {
+        $html = "<input name='{$id}' $plus />";
+    }
+    echo div($html, $size);
+}
+
+function _form_parse_attr($attr = '') {
+    $attributes = new SimpleXMLElement("<element $attr />");
+    if (!isset($attributes['value'])) {
+        $attributes['value'] = '';
+    }
+    return $attributes;
+}
+
+function _form_error_html($id)
+{
+    echo "<div class='invalid-feedback' id='invalid$id' ></div>";
+}
+
+function textarea($id, $plus = "", $size = 3)
+{
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    $parse = _form_parse_attr($plus);
+    $html = "<textarea name='{$id}' $plus >{$parse['value']}</textarea>";
+    echo div($html, $size);
+}
+
+function mask($id, $mask = "999999", $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    if (!str_contains($plus, "type")) {
+        $html = "<input type='text' name='{$id}' data-inputmask=\"'mask':'{$mask}'\" {$plus} />";
+    } else {
+        $html = "<input name='{$id}' data-inputmask==\"'mask':'{$mask}'\" {$plus} />";
+    }
+
+    echo div($html, $size);
+}
+
+function number($id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    $html = "<input type='number' name='{$id}'  {$plus} />";
+    echo div($html, $size);
+}
+
+function money($id, $digits = 2, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    $info = localeconv();
+    // $info['frac_digits'] = $digits;
+    // dd($info);
+    $html = "<input type='text' name='{$id}' data-thousands='' data-decimal='.' data-precision='{$digits}' {$plus} />";
+    $html .= "<script>$(function(){ $('input[name=\"{$id}\"]').maskMoney(); })</script>";
+    // $html = "<input type='text' name='{$id}' data-frac_digits='" . $info['frac_digits'] . "' data-decimal_point='" . $info['decimal_point'] . "' data-thousands_sep='" . $info['thousands_sep'] . "' data-money='true' {$plus} />";
+    echo div($html, $size);
+}
+
+function password($id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    $html = "<input name='{$id}' type='password' $plus />";
+    echo div($html, $size);
+}
+
+//wtf ?
+
+function upload($id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    if (!str_contains($plus, 'class="')) {
+        $plus .= ' class="form-control"';
+    }
+    // conf::$pkj_uid_comp++;
+    $r = "<input $plus type='file' name='{$id}' $plus />";
+    echo div($r, $size);
+}
+
+function div($elemento = "", $tamanho = 2, $class = "") {
+    return "<div class='col-md-$tamanho $class' >$elemento</div>\n";
+}
+
+function label_text($label, $id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    text($id, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function label_textarea($label, $id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    textarea($id, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function label_combo($label, $id, $itens = [], $valoresItens = [], $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    combo($id, $itens, $valoresItens, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function label_upload($label, $id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    upload($id, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function label_password($label, $id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    password($id, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function label_money($label, $id, $digits = 2, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    money($id, $digits, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function label_mask($label, $id, $mask = "9999", $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    mask($id, $mask, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function label_number($label, $id, $plus = "", $size = 3) {
+    if (is_numeric($plus)) {
+        $size = $plus;
+        $plus = "";
+    }
+    ob_start();
+    if ($label !== '') {
+        label($label, 12);
+    }
+    number($id, $plus, 12);
+    _form_error_html($id);
+    $html = ob_get_clean();
+    echo div($html, $size, "form-group");
+}
+
+function hidden($id, $value = "", $show = false) {
+    echo "<input type='hidden' name='{$id}' value='$value' />" . (($show) ? $value : "");
 }
 
 //</newbgp>
