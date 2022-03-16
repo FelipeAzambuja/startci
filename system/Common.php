@@ -31,7 +31,8 @@ use Config\Logger;
 use Config\Services;
 use Config\View;
 use Laminas\Escaper\Escaper;
-
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 // Services Convenience Functions
 
 if (!function_exists('app_timezone')) {
