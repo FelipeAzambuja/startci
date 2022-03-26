@@ -53,12 +53,10 @@ use ReflectionClass;
  * @method ORM offset(int $offset)
  * @method ORM resetQuery()
  * @method ORM def($values = [])
- * @method ORM create(array $fields)
  * 
  * @mixin Database\BaseBuilder
  */
-class ORM implements \JsonSerializable
-{
+class ORM {
 
     /**
      * 
@@ -74,16 +72,16 @@ class ORM implements \JsonSerializable
     public $class;
     public $table = '';
     public $autoload = [];
+    public $fields = [];
+
     /**
      * @return static
      */
-    static function init($db = null)
-    {
+    static function init($db = null) {
         return new static($db);
     }
 
-    public function __construct($db = null)
-    {
+    public function __construct($db = null) {
         $this->db = db_connect($db);
         $this->class = get_class($this);
         $c_name = explode('\\', $this->class);
@@ -91,30 +89,44 @@ class ORM implements \JsonSerializable
         if (!$this->table)
             $this->table = strtolower($c_name);
         $this->builder = $this->db->table($this->table);
+        $rc = new ReflectionClass($this->class);
+        $factory = DocBlockFactory::createInstance();
+        $docblock = $factory->create($rc->getDocComment() ?? '');
+        $tags = $docblock->getTagsByName('property');
+        foreach ($tags as $key => $value) {
+            $type = strval($value->getType());
+            $name = $value->getVariableName();
+            if (!class_exists($type) && !str_contains($type, 'Collection') && !str_contains($type, '[]'))
+                $fields[] = [
+                    'type' => $type,
+                    'name' => $name
+                ];
+        }
+        $this->fields = $fields;
     }
 
-    function create($prefix = null)
-    {
+    function create($prefix = null) {
         $rc = new ReflectionClass($this->class);
         $myClass = new $this->class();
         if (!$prefix) {
-            $prefix =  implode('_', array_map('strtolower', array_slice(explode('\\', $myClass->class), 2, -1)));
+            $prefix = implode('_', array_map('strtolower', array_slice(explode('\\', $myClass->class), 2, -1)));
             if ($prefix)
                 $prefix .= '_';
         }
         if ($prefix)
             $this->builder->setTableName($prefix . $this->table);
-        $factory  = DocBlockFactory::createInstance();
+        $factory = DocBlockFactory::createInstance();
         $docblock = $factory->create($rc->getDocComment() ?? '');
         $tags = $docblock->getTagsByName('property');
         $fields = [];
 
         foreach ($tags as $key => $t) {
             // $t = new Property();
-            $name =  $t->getVariableName();
+            $name = $t->getVariableName();
             $type = strval($t->getType());
             $is_relation = class_exists($type);
             if ($is_relation && !in_array($type, ['date', 'datetime', 'timestamp'])) {
+                $this->relation_fields[] = $name;
                 $c = new $type();
                 $c->create();
                 $type = $c->table . '.id';
@@ -128,17 +140,19 @@ class ORM implements \JsonSerializable
             }
             if (!$name)
                 continue;
-            if (str_contains($type, 'Collection') || str_contains($type, '[]'))
+            if (str_contains($type, 'Collection') || str_contains($type, '[]')) {
+                $this->relation_fields[] = $name;
                 continue;
+            }
             if (in_array($name, ['id', 'created_at', 'updated_at']))
                 continue;
             $fields[$name] = $type;
         }
 
-        // dump($this->class,$fields);
         try {
             $this->builder->create($fields);
         } catch (\Throwable $th) {
+            
         }
         if ($rc->hasMethod('seed'))
             if (!$this->first())
@@ -151,30 +165,26 @@ class ORM implements \JsonSerializable
      * @param integer $id
      * @return self|parent|static
      */
-    function byId($id)
-    {
+    function byId($id) {
         $this->builder->where('id', $id);
         return $this->first();
     }
 
-    function insert(array $set = null, bool $escape = null)
-    {
+    function insert(array $set = null, bool $escape = null) {
         if ($this->builder->insert($set, $escape))
             return $this->byId($this->builder->selectMax('id')->first($this->class)->id);
         else
             return null;
     }
 
-    function relation($class, $fk, $id = null, $mode = 'many')
-    {
+    function relation($class, $fk, $id = null, $mode = 'many') {
         $c = new $class($this->db);
         if (!$id)
             $id = $this->id;
         return $c->where($fk, $id)->get();
     }
 
-    function relationOne($class, $fk, $id)
-    {
+    function relationOne($class, $fk, $id) {
         $c = new $class($this->db);
         return $c->where($fk, $id)->first();
     }
@@ -183,13 +193,17 @@ class ORM implements \JsonSerializable
      * 
      * @return \Tightenco\Collect\Support\Collection|self|parent|static|array|array[static]
      */
-    function get(): \Tightenco\Collect\Support\Collection
-    {
+    function get(): \Tightenco\Collect\Support\Collection {
         $autoload = $this->autoload;
         $r = collect($this->builder->rs($this->class))->map(function ($v, $k) use ($autoload) {
+            $r = (object) [];
+            foreach ($this->fields as $key => $value) {
+                $name = $value['name'];
+                $r->{$name} = $v->{$name};
+            }
             foreach ($autoload as $key => $value)
-                $v->{$value} = $v->{$value};
-            return $v;
+                $r->{$value} = $v->{$value};
+            return $r;
         });
         return $r;
     }
@@ -198,12 +212,16 @@ class ORM implements \JsonSerializable
      * 
      * @return self|this|null|parent|static
      */
-    function first()
-    {
+    function first() {
         $v = $this->builder->first($this->class);
+        $r = (object) [];
+        foreach ($this->fields as $key => $value) {
+            $name = $value['name'];
+            $r->{$name} = $v->{$name};
+        }
         foreach ($this->autoload as $key => $value)
-            $v->{$value} = $v->{$value};
-        return $v;
+            $r->{$value} = $v->{$value};
+        return $r;
     }
 
     /**
@@ -212,8 +230,7 @@ class ORM implements \JsonSerializable
      * @param array $params
      * @return Database\BaseBuilder
      */
-    public function __call(string $name, array $params)
-    {
+    public function __call(string $name, array $params) {
         $result = null;
         if (method_exists($this->builder, $name))
             $result = $this->builder->{$name}(...$params);
@@ -222,18 +239,8 @@ class ORM implements \JsonSerializable
         return $result;
     }
 
-    public function jsonSerialize()
-    {
-        $r = $this->builder->def();
-        foreach ($r as $key => $v)
-            $r->{$key} = $this->{$key};
-        foreach ($this->autoload as $key => $value)
-            $r->{$value} = $this->{$value};
-        return $r;
-    }
-
-    function toJson()
-    {
+    function toJson() {
         return json_encode($this);
     }
+
 }
