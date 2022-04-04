@@ -108,18 +108,31 @@ class Orm extends BaseCommand
         $file .= "" . PHP_EOL;
         $file .= "}" . PHP_EOL;
         $file .= "" . PHP_EOL;
-        $file .= "/** ". PHP_EOL;
-        $file .= " * @return $className" . PHP_EOL;
-        $file .= " */" . PHP_EOL;
-        $file .= "function model_$table(){" . PHP_EOL;
-        $file .= "  return new $className();" . PHP_EOL;
-        $file .= "}" . PHP_EOL;
         if (file_exists("../app/Models/$className.php"))
             if (strtoupper(CLI::prompt('Overwrite file ? (y,n)', null, 'required')) != "Y")
                 return false;
         file_put_contents("../app/Models/$className.php", $file);
+        $file = '';
+        $file = file_get_contents('../app/Common.php') . PHP_EOL;;
+        $file .= "/** " . PHP_EOL;
+        $file .= " * @return \App\Models\\".$className . PHP_EOL;
+        $file .= " */" . PHP_EOL;
+        $file .= "function model_$table(){" . PHP_EOL;
+        $file .= "  return new \App\Models\\".$className."();" . PHP_EOL;
+        $file .= "}" . PHP_EOL . PHP_EOL;
+        file_put_contents('../app/Common.php', $file);
     }
 
+    function down()
+    {
+        $con = db_connect();
+        $database = env('database.default.database');
+        try {
+            $con->simpleQuery("drop database $database");
+            $con->simpleQuery("create database $database");
+        } catch (\Throwable $th) {
+        }
+    }
     function up()
     {
         $con = db_connect();

@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+
 use CodeIgniter\Cache\CacheInterface;
 use CodeIgniter\Config\Factories;
 use CodeIgniter\Cookie\Cookie;
@@ -43,12 +44,12 @@ if (!function_exists('app_timezone')) {
      * at the server level, as you often want to stores dates in UTC
      * and convert them on the fly for the user.
      */
-    function app_timezone(): string {
+    function app_timezone(): string
+    {
         $config = config(App::class);
 
         return $config->appTimezone;
     }
-
 }
 
 if (!function_exists('cache')) {
@@ -64,7 +65,8 @@ if (!function_exists('cache')) {
      *
      * @return CacheInterface|mixed
      */
-    function cache(?string $key = null) {
+    function cache(?string $key = null)
+    {
         $cache = Services::cache();
 
         // No params - return cache object
@@ -75,7 +77,6 @@ if (!function_exists('cache')) {
         // Still here? Retrieve the value.
         return $cache->get($key);
     }
-
 }
 
 if (!function_exists('clean_path')) {
@@ -85,7 +86,8 @@ if (!function_exists('clean_path')) {
      * a nicer looking output. Useful for exception
      * handling, error logging, etc.
      */
-    function clean_path(string $path): string {
+    function clean_path(string $path): string
+    {
         // Resolve relative paths
         $path = realpath($path) ?: $path;
 
@@ -109,7 +111,6 @@ if (!function_exists('clean_path')) {
                 return $path;
         }
     }
-
 }
 
 if (!function_exists('command')) {
@@ -123,7 +124,8 @@ if (!function_exists('command')) {
      *
      * @return false|string
      */
-    function command(string $command) {
+    function command(string $command)
+    {
         $runner = service('commands');
         $regexString = '([^\s]+?)(?:\s|(?<!\\\\)"|(?<!\\\\)\'|$)';
         $regexQuoted = '(?:"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(?:\\\\.[^\'\\\\]*)*)\')';
@@ -188,7 +190,6 @@ if (!function_exists('command')) {
 
         return ob_get_clean();
     }
-
 }
 
 if (!function_exists('config')) {
@@ -198,10 +199,10 @@ if (!function_exists('config')) {
      *
      * @return mixed
      */
-    function config(string $name, bool $getShared = true) {
+    function config(string $name, bool $getShared = true)
+    {
         return Factories::config($name, ['getShared' => $getShared]);
     }
-
 }
 
 if (!function_exists('cookie')) {
@@ -215,10 +216,10 @@ if (!function_exists('cookie')) {
      *
      * @throws CookieException
      */
-    function cookie(string $name, string $value = '', array $options = []): Cookie {
+    function cookie(string $name, string $value = '', array $options = []): Cookie
+    {
         return new Cookie($name, $value, $options);
     }
-
 }
 
 if (!function_exists('cookies')) {
@@ -229,14 +230,14 @@ if (!function_exists('cookies')) {
      * @param Cookie[] $cookies   If `getGlobal` is false, this is passed to CookieStore's constructor
      * @param bool     $getGlobal If false, creates a new instance of CookieStore
      */
-    function cookies(array $cookies = [], bool $getGlobal = true): CookieStore {
+    function cookies(array $cookies = [], bool $getGlobal = true): CookieStore
+    {
         if ($getGlobal) {
             return Services::response()->getCookieStore();
         }
 
         return new CookieStore($cookies);
     }
-
 }
 
 if (!function_exists('csrf_token')) {
@@ -246,10 +247,10 @@ if (!function_exists('csrf_token')) {
      * Can be used in Views when building hidden inputs manually,
      * or used in javascript vars when using APIs.
      */
-    function csrf_token(): string {
+    function csrf_token(): string
+    {
         return Services::security()->getTokenName();
     }
-
 }
 
 if (!function_exists('csrf_header')) {
@@ -259,10 +260,10 @@ if (!function_exists('csrf_header')) {
      * Can be used in Views by adding it to the meta tag
      * or used in javascript to define a header name when using APIs.
      */
-    function csrf_header(): string {
+    function csrf_header(): string
+    {
         return Services::security()->getHeaderName();
     }
-
 }
 
 if (!function_exists('csrf_hash')) {
@@ -272,10 +273,10 @@ if (!function_exists('csrf_hash')) {
      * Can be used in Views when building hidden inputs manually,
      * or used in javascript vars for API usage.
      */
-    function csrf_hash(): string {
+    function csrf_hash(): string
+    {
         return Services::security()->getHash();
     }
-
 }
 
 if (!function_exists('csrf_field')) {
@@ -283,10 +284,10 @@ if (!function_exists('csrf_field')) {
     /**
      * Generates a hidden input field for use within manually generated forms.
      */
-    function csrf_field(?string $id = null): string {
+    function csrf_field(?string $id = null): string
+    {
         return '<input type="hidden"' . (!empty($id) ? ' id="' . esc($id, 'attr') . '"' : '') . ' name="' . csrf_token() . '" value="' . csrf_hash() . '" />';
     }
-
 }
 
 if (!function_exists('csrf_meta')) {
@@ -294,10 +295,10 @@ if (!function_exists('csrf_meta')) {
     /**
      * Generates a meta tag for use within javascript calls.
      */
-    function csrf_meta(?string $id = null): string {
+    function csrf_meta(?string $id = null): string
+    {
         return '<meta' . (!empty($id) ? ' id="' . esc($id, 'attr') . '"' : '') . ' name="' . csrf_header() . '" content="' . csrf_hash() . '" />';
     }
-
 }
 
 if (!function_exists('db_connect')) {
@@ -320,10 +321,10 @@ if (!function_exists('db_connect')) {
      *
      * @return BaseConnection
      */
-    function db_connect($db = null, bool $getShared = true) {
+    function db_connect($db = null, bool $getShared = true)
+    {
         return Database::connect($db, $getShared);
     }
-
 }
 
 if (!function_exists('dd')) {
@@ -335,7 +336,8 @@ if (!function_exists('dd')) {
      *
      * @codeCoverageIgnore Can't be tested ... exits
      */
-    function dd(...$vars) {
+    function dd(...$vars)
+    {
         // @codeCoverageIgnoreStart
         Kint::$aliases[] = 'dd';
         Kint::dump(...$vars);
@@ -343,7 +345,6 @@ if (!function_exists('dd')) {
         exit;
         // @codeCoverageIgnoreEnd
     }
-
 }
 
 if (!function_exists('env')) {
@@ -358,7 +359,8 @@ if (!function_exists('env')) {
      *
      * @return mixed
      */
-    function env(string $key, $default = null) {
+    function env(string $key, $default = null)
+    {
         $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
 
         // Not found? Return the default value
@@ -383,7 +385,6 @@ if (!function_exists('env')) {
 
         return $value;
     }
-
 }
 
 if (!function_exists('esc')) {
@@ -405,7 +406,8 @@ if (!function_exists('esc')) {
      *
      * @return array|string
      */
-    function esc($data, string $context = 'html', ?string $encoding = null) {
+    function esc($data, string $context = 'html', ?string $encoding = null)
+    {
         if (is_array($data)) {
             foreach ($data as &$value) {
                 $value = esc($value, $context);
@@ -442,7 +444,6 @@ if (!function_exists('esc')) {
 
         return $data;
     }
-
 }
 
 if (!function_exists('force_https')) {
@@ -462,7 +463,8 @@ if (!function_exists('force_https')) {
      *
      * @throws HTTPException
      */
-    function force_https(int $duration = 31536000, ?RequestInterface $request = null, ?ResponseInterface $response = null) {
+    function force_https(int $duration = 31536000, ?RequestInterface $request = null, ?ResponseInterface $response = null)
+    {
         if ($request === null) {
             $request = Services::request(null, true);
         }
@@ -481,7 +483,7 @@ if (!function_exists('force_https')) {
         if (ENVIRONMENT !== 'testing' && session_status() === PHP_SESSION_ACTIVE) {
             // @codeCoverageIgnoreStart
             Services::session(null, true)
-                    ->regenerate();
+                ->regenerate();
             // @codeCoverageIgnoreEnd
         }
 
@@ -494,11 +496,11 @@ if (!function_exists('force_https')) {
         }
 
         $uri = URI::createURIString(
-                        'https',
-                        $baseURL,
-                        $request->getUri()->getPath(), // Absolute URIs should use a "/" for an empty path
-                        $request->getUri()->getQuery(),
-                        $request->getUri()->getFragment()
+            'https',
+            $baseURL,
+            $request->getUri()->getPath(), // Absolute URIs should use a "/" for an empty path
+            $request->getUri()->getQuery(),
+            $request->getUri()->getFragment()
         );
 
         // Set an HSTS header
@@ -512,7 +514,6 @@ if (!function_exists('force_https')) {
             // @codeCoverageIgnoreEnd
         }
     }
-
 }
 
 if (!function_exists('function_usable')) {
@@ -544,7 +545,8 @@ if (!function_exists('function_usable')) {
      *
      * @codeCoverageIgnore This is too exotic
      */
-    function function_usable(string $functionName): bool {
+    function function_usable(string $functionName): bool
+    {
         static $_suhosin_func_blacklist;
 
         if (function_exists($functionName)) {
@@ -557,7 +559,6 @@ if (!function_exists('function_usable')) {
 
         return false;
     }
-
 }
 
 if (!function_exists('helper')) {
@@ -575,7 +576,8 @@ if (!function_exists('helper')) {
      *
      * @throws FileNotFoundException
      */
-    function helper($filenames) {
+    function helper($filenames)
+    {
         static $loaded = [];
 
         $loader = Services::locator();
@@ -651,7 +653,6 @@ if (!function_exists('helper')) {
             include_once $path;
         }
     }
-
 }
 
 if (!function_exists('is_cli')) {
@@ -661,7 +662,8 @@ if (!function_exists('is_cli')) {
      *
      * @codeCoverageIgnore Cannot be tested fully as PHPUnit always run in php-cli
      */
-    function is_cli(): bool {
+    function is_cli(): bool
+    {
         if (in_array(PHP_SAPI, ['cli', 'phpdbg'], true)) {
             return true;
         }
@@ -670,7 +672,6 @@ if (!function_exists('is_cli')) {
         // See https://github.com/codeigniter4/CodeIgniter4/pull/5393
         return !isset($_SERVER['REMOTE_ADDR']) && !isset($_SERVER['REQUEST_METHOD']);
     }
-
 }
 
 if (!function_exists('is_really_writable')) {
@@ -688,7 +689,8 @@ if (!function_exists('is_really_writable')) {
      *
      * @codeCoverageIgnore Not practical to test, as travis runs on linux
      */
-    function is_really_writable(string $file): bool {
+    function is_really_writable(string $file): bool
+    {
         // If we're on a Unix server we call is_writable
         if (DIRECTORY_SEPARATOR === '/') {
             return is_writable($file);
@@ -718,7 +720,6 @@ if (!function_exists('is_really_writable')) {
 
         return true;
     }
-
 }
 
 if (!function_exists('lang')) {
@@ -729,7 +730,8 @@ if (!function_exists('lang')) {
      *
      * @return string
      */
-    function lang(string $line, array $args = [], ?string $locale = null) {
+    function lang(string $line, array $args = [], ?string $locale = null)
+    {
         $language = Services::language();
 
         // Get active locale
@@ -748,7 +750,6 @@ if (!function_exists('lang')) {
 
         return $line;
     }
-
 }
 
 if (!function_exists('log_message')) {
@@ -769,7 +770,8 @@ if (!function_exists('log_message')) {
      *
      * @return mixed
      */
-    function log_message(string $level, string $message, array $context = []) {
+    function log_message(string $level, string $message, array $context = [])
+    {
         // When running tests, we want to always ensure that the
         // TestLogger is running, which provides utilities for
         // for asserting that logs were called in the test code.
@@ -781,10 +783,9 @@ if (!function_exists('log_message')) {
 
         // @codeCoverageIgnoreStart
         return Services::logger(true)
-                        ->log($level, $message, $context);
+            ->log($level, $message, $context);
         // @codeCoverageIgnoreEnd
     }
-
 }
 
 if (!function_exists('model')) {
@@ -799,10 +800,10 @@ if (!function_exists('model')) {
      * @return T
      * @phpstan-return Model
      */
-    function model(string $name, bool $getShared = true, ?ConnectionInterface &$conn = null) {
+    function model(string $name, bool $getShared = true, ?ConnectionInterface &$conn = null)
+    {
         return Factories::models($name, ['getShared' => $getShared], $conn);
     }
-
 }
 
 if (!function_exists('old')) {
@@ -816,7 +817,8 @@ if (!function_exists('old')) {
      *
      * @return mixed|null
      */
-    function old(string $key, $default = null, $escape = 'html') {
+    function old(string $key, $default = null, $escape = 'html')
+    {
         // Ensure the session is loaded
         if (session_status() === PHP_SESSION_NONE && ENVIRONMENT !== 'testing') {
             // @codeCoverageIgnoreStart
@@ -841,7 +843,6 @@ if (!function_exists('old')) {
 
         return $escape === false ? $value : esc($value, $escape);
     }
-
 }
 
 if (!function_exists('redirect')) {
@@ -855,7 +856,8 @@ if (!function_exists('redirect')) {
      *
      * @param string $route
      */
-    function redirect(?string $route = null): RedirectResponse {
+    function redirect(?string $route = null): RedirectResponse
+    {
         $response = Services::redirectresponse(null, true);
 
         if (!empty($route)) {
@@ -864,7 +866,6 @@ if (!function_exists('redirect')) {
 
         return $response;
     }
-
 }
 
 if (!function_exists('remove_invisible_characters')) {
@@ -875,7 +876,8 @@ if (!function_exists('remove_invisible_characters')) {
      * This prevents sandwiching null characters
      * between ascii characters, like Java\0script.
      */
-    function remove_invisible_characters(string $str, bool $urlEncoded = true): string {
+    function remove_invisible_characters(string $str, bool $urlEncoded = true): string
+    {
         $nonDisplayables = [];
 
         // every control character except newline (dec 10),
@@ -893,7 +895,6 @@ if (!function_exists('remove_invisible_characters')) {
 
         return $str;
     }
-
 }
 
 if (!function_exists('route_to')) {
@@ -910,10 +911,10 @@ if (!function_exists('route_to')) {
      *
      * @return false|string
      */
-    function route_to(string $method, ...$params) {
+    function route_to(string $method, ...$params)
+    {
         return Services::routes()->reverseRoute($method, ...$params);
     }
-
 }
 
 if (!function_exists('session')) {
@@ -930,7 +931,8 @@ if (!function_exists('session')) {
      *
      * @return mixed|Session|null
      */
-    function session(?string $val = null) {
+    function session(?string $val = null)
+    {
         $session = Services::session();
 
         // Returning a single item?
@@ -940,7 +942,6 @@ if (!function_exists('session')) {
 
         return $session;
     }
-
 }
 
 if (!function_exists('service')) {
@@ -959,10 +960,10 @@ if (!function_exists('service')) {
      *
      * @return mixed
      */
-    function service(string $name, ...$params) {
+    function service(string $name, ...$params)
+    {
         return Services::$name(...$params);
     }
-
 }
 
 if (!function_exists('single_service')) {
@@ -974,7 +975,8 @@ if (!function_exists('single_service')) {
      *
      * @return mixed
      */
-    function single_service(string $name, ...$params) {
+    function single_service(string $name, ...$params)
+    {
         $service = Services::serviceExists($name);
 
         if ($service === null) {
@@ -1003,7 +1005,6 @@ if (!function_exists('single_service')) {
 
         return $service::$name(...$params);
     }
-
 }
 
 if (!function_exists('slash_item')) {
@@ -1018,7 +1019,8 @@ if (!function_exists('slash_item')) {
      * @return string|null The configuration item or NULL if
      *                     the item doesn't exist
      */
-    function slash_item(string $item): ?string {
+    function slash_item(string $item): ?string
+    {
         $config = config(App::class);
         $configItem = $config->{$item};
 
@@ -1028,7 +1030,6 @@ if (!function_exists('slash_item')) {
 
         return rtrim($configItem, '/') . '/';
     }
-
 }
 
 if (!function_exists('stringify_attributes')) {
@@ -1041,7 +1042,8 @@ if (!function_exists('stringify_attributes')) {
      *
      * @param mixed $attributes string, array, object
      */
-    function stringify_attributes($attributes, bool $js = false): string {
+    function stringify_attributes($attributes, bool $js = false): string
+    {
         $atts = '';
 
         if (empty($attributes)) {
@@ -1060,7 +1062,6 @@ if (!function_exists('stringify_attributes')) {
 
         return rtrim($atts, ',');
     }
-
 }
 
 if (!function_exists('timer')) {
@@ -1072,7 +1073,8 @@ if (!function_exists('timer')) {
      *
      * @return mixed|Timer
      */
-    function timer(?string $name = null) {
+    function timer(?string $name = null)
+    {
         $timer = Services::timer();
 
         if (empty($name)) {
@@ -1085,7 +1087,6 @@ if (!function_exists('timer')) {
 
         return $timer->start($name);
     }
-
 }
 
 if (!function_exists('trace')) {
@@ -1093,11 +1094,11 @@ if (!function_exists('trace')) {
     /**
      * Provides a backtrace to the current execution point, from Kint.
      */
-    function trace() {
+    function trace()
+    {
         Kint::$aliases[] = 'trace';
         Kint::trace();
     }
-
 }
 
 if (!function_exists('view')) {
@@ -1113,7 +1114,8 @@ if (!function_exists('view')) {
      *
      * @param array $options Unused - reserved for third-party extensions.
      */
-    function view(string $name, array $data = [], array $options = []): string {
+    function view(string $name, array $data = [], array $options = []): string
+    {
         /**
          * @var CodeIgniter\View\View $renderer
          */
@@ -1128,7 +1130,6 @@ if (!function_exists('view')) {
 
         return $renderer->setData($data, 'raw')->render($name, $options, $saveData);
     }
-
 }
 
 if (!function_exists('view_cell')) {
@@ -1141,11 +1142,11 @@ if (!function_exists('view_cell')) {
      *
      * @throws ReflectionException
      */
-    function view_cell(string $library, $params = null, int $ttl = 0, ?string $cacheName = null): string {
+    function view_cell(string $library, $params = null, int $ttl = 0, ?string $cacheName = null): string
+    {
         return Services::viewcell()
-                        ->render($library, $params, $ttl, $cacheName);
+            ->render($library, $params, $ttl, $cacheName);
     }
-
 }
 
 /**
@@ -1165,12 +1166,12 @@ if (!function_exists('class_basename')) {
      *
      * @codeCoverageIgnore
      */
-    function class_basename($class) {
+    function class_basename($class)
+    {
         $class = is_object($class) ? get_class($class) : $class;
 
         return basename(str_replace('\\', '/', $class));
     }
-
 }
 
 if (!function_exists('class_uses_recursive')) {
@@ -1184,7 +1185,8 @@ if (!function_exists('class_uses_recursive')) {
      *
      * @codeCoverageIgnore
      */
-    function class_uses_recursive($class) {
+    function class_uses_recursive($class)
+    {
         if (is_object($class)) {
             $class = get_class($class);
         }
@@ -1197,7 +1199,6 @@ if (!function_exists('class_uses_recursive')) {
 
         return array_unique($results);
     }
-
 }
 
 if (!function_exists('trait_uses_recursive')) {
@@ -1211,7 +1212,8 @@ if (!function_exists('trait_uses_recursive')) {
      *
      * @codeCoverageIgnore
      */
-    function trait_uses_recursive($trait) {
+    function trait_uses_recursive($trait)
+    {
         $traits = class_uses($trait) ?: [];
 
         foreach ($traits as $trait) {
@@ -1220,15 +1222,16 @@ if (!function_exists('trait_uses_recursive')) {
 
         return $traits;
     }
-
 }
 
 //<newbgp>
-function is_post() {
+function is_post()
+{
     return ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';
 }
 
-function is_get() {
+function is_get()
+{
     return ($_SERVER['REQUEST_METHOD'] ?? 'POST') === 'GET';
 }
 
@@ -1249,7 +1252,8 @@ function form($key = null, $default = null)
  * @param type $name
  * @return \CodeIgniter\Database\BaseBuilder
  */
-function table(string $name, $db = null): \CodeIgniter\Database\BaseBuilder {
+function table(string $name, $db = null): \CodeIgniter\Database\BaseBuilder
+{
     return db_connect($db)->table($name);
 }
 
@@ -1259,12 +1263,14 @@ function table(string $name, $db = null): \CodeIgniter\Database\BaseBuilder {
  * @return \CodeIgniter\Validation\Validation
  */
 
-function valid(): \CodeIgniter\Validation\Validation {
+function valid(): \CodeIgniter\Validation\Validation
+{
     $valid = Services::validation();
     return $valid;
 }
 
-function form_error($field, $template = 'single') {
+function form_error($field, $template = 'single')
+{
     echo valid()->showError($field, $template);
 }
 
@@ -1302,7 +1308,8 @@ function user($table = 'users')
  * @param string $data
  * @return string|boolean
  */
-function excel_date($data, $format = 'd/m/Y', $erro = false) {
+function excel_date($data, $format = 'd/m/Y', $erro = false)
+{
     if (!$format) {
         $format = 'd/m/Y';
     }
@@ -1318,16 +1325,17 @@ function excel_date($data, $format = 'd/m/Y', $erro = false) {
     }
 }
 
-class FakeCarbon {
+class FakeCarbon
+{
 
-    function __construct($date = null) {
-        
+    function __construct($date = null)
+    {
     }
 
-    function format($format = null) {
+    function format($format = null)
+    {
         return null;
     }
-
 }
 
 /**
@@ -1335,9 +1343,10 @@ class FakeCarbon {
  * @param string $data
  * @return \Carbon\Carbon
  */
-function carbon(string $data = null) {
+function carbon(string $data = null)
+{
 
-    if (!$data || $data == '30/11/-0001' || $data == '0000-00-00') {
+    if ($data == '30/11/-0001' || $data == '0000-00-00') {
         $nullformat = new FakeCarbon();
         return $nullformat;
     }
@@ -1349,17 +1358,21 @@ function carbon(string $data = null) {
         return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $data);
     } elseif (is_date('Y-m-d', $data)) {
         return \Carbon\Carbon::createFromFormat('Y-m-d', $data);
+    } elseif ($data == null) {
+        return \Carbon\Carbon::now();
     } else {
         $nullformat = new FakeCarbon();
         return $nullformat;
     }
 }
 
-function is_date($format, $date) {
+function is_date($format, $date)
+{
     return (DateTime::createFromFormat($format, $date)) !== false;
 }
 
-function thread($route) {
+function thread($route)
+{
     $p = new Process(explode(' ', 'php index.php ' . $route));
     $p->setTimeout(null);
     $p->setIdleTimeout(null);
@@ -1370,7 +1383,8 @@ function thread($route) {
     return $p;
 }
 
-function thread_group($routes) {
+function thread_group($routes)
+{
     $ps = array_map(function ($p) {
         return thread($p);
     }, $routes);
@@ -1380,13 +1394,15 @@ function thread_group($routes) {
     }
 }
 
-function thread_group_batch($routes, $size = 2) {
+function thread_group_batch($routes, $size = 2)
+{
     batch_exec_async(array_map(function ($v) {
-                return "php index.php $v";
-            }, $routes), $size);
+        return "php index.php $v";
+    }, $routes), $size);
 }
 
-function batch_exec_async($cmds, $limit = 1000) {
+function batch_exec_async($cmds, $limit = 1000)
+{
     foreach ($cmds as $key => $value) {
         $p = new Process(explode(' ', $value));
         $p->setTimeout(null);
@@ -1420,7 +1436,8 @@ function batch_exec_async($cmds, $limit = 1000) {
     return true;
 }
 
-function assets_build(array $files, $id = '') {
+function assets_build(array $files, $id = '')
+{
     $css = [];
     $js = [];
     foreach ($files as $key => $f) {
@@ -1435,7 +1452,8 @@ function assets_build(array $files, $id = '') {
         css_build($files, $id);
 }
 
-function css_build(array $files, $id = '') {
+function css_build(array $files, $id = '')
+{
     $c = stream_context_create([
         'ssl' => [
             "verify_peer" => false,
@@ -1453,7 +1471,8 @@ function css_build(array $files, $id = '') {
     echo "<link rel='stylesheet' href='/public/build$id.css' />";
 }
 
-function js_build(array $files, $id = '') {
+function js_build(array $files, $id = '')
+{
     $c = stream_context_create([
         'ssl' => [
             "verify_peer" => false,
@@ -1471,7 +1490,8 @@ function js_build(array $files, $id = '') {
     echo "<script src='/public/build$id.js'></script>";
 }
 
-function assets_cache($file) {
+function assets_cache($file)
+{
     if (!$file)
         return '';
     if (is_array($file)) {
@@ -1490,7 +1510,8 @@ function assets_cache($file) {
         echo "<style>$content</style>" . PHP_EOL;
 }
 
-function smarty($view, $data = []) {
+function smarty($view, $data = [])
+{
     // die("not compatible 8.1 https://github.com/smarty-php/smarty/issues/671");
     $smarty = new Smarty();
     @mkdir('writable/cache/smarty/templates_c/', 0777, true);
@@ -1503,7 +1524,7 @@ function smarty($view, $data = []) {
     }
     // dd(ROOTPATH.'app/View/components/');
     if (file_exists('app/Views/components/'))
-        $files = array_map(function (SplFileInfo $v)use ($smarty) {
+        $files = array_map(function (SplFileInfo $v) use ($smarty) {
             $value = $v->getPathname();
             if ($v->isDir() || !$v->isFile())
                 return false;
@@ -1515,7 +1536,7 @@ function smarty($view, $data = []) {
             else
                 $namespace = '';
             $component_name = substr($filename, 0, -4);
-            $smarty->registerPlugin('function', $namespace . $component_name, function ($params, Smarty_Internal_Template $smarty)use ($value) {
+            $smarty->registerPlugin('function', $namespace . $component_name, function ($params, Smarty_Internal_Template $smarty) use ($value) {
                 $tpl = $value;
                 foreach ($params as $key => $value)
                     $smarty->assign($key, $value);
@@ -1530,7 +1551,8 @@ function smarty($view, $data = []) {
  * 
  * @return \CodeIgniter\JS
  */
-function js(): \CodeIgniter\JS {
+function js(): \CodeIgniter\JS
+{
     return new \CodeIgniter\JS();
 }
 
@@ -1539,7 +1561,8 @@ function js(): \CodeIgniter\JS {
  * @param type $selector
  * @return \CodeIgniter\Jquery
  */
-function jquery($selector = ''): \CodeIgniter\Jquery {
+function jquery($selector = ''): \CodeIgniter\Jquery
+{
     return new \CodeIgniter\Jquery($selector);
 }
 
@@ -1548,7 +1571,8 @@ function jquery($selector = ''): \CodeIgniter\Jquery {
  * @param type $varname
  * @return \CodeIgniter\Vue
  */
-function vue($varname = 'vue'): \CodeIgniter\Vue {
+function vue($varname = 'vue'): \CodeIgniter\Vue
+{
     return new \CodeIgniter\Vue($varname);
 }
 
@@ -1556,22 +1580,26 @@ function vue($varname = 'vue'): \CodeIgniter\Vue {
  * 
  * @return \Faker\Generator
  */
-function faker($locale = null) {
+function faker($locale = null)
+{
 
     return \Faker\Factory::create($locale ?? 'pt_br');
 }
 
-function form_open($plus = '') {
+function form_open($plus = '')
+{
     echo '<form ' . $plus . '>';
 }
 
-function form_close() {
+function form_close()
+{
     echo '</form>';
 }
 
-function row($class = "row", $id = "") {
+function row($class = "row", $id = "")
+{
     global $ci_row;
-    if ($ci_row == true||$ci_row == null) {
+    if ($ci_row == true || $ci_row == null) {
         echo "<div id=\"{$id}\" class=\"{$class}\">";
         $ci_row = false;
     } else {
@@ -1580,7 +1608,8 @@ function row($class = "row", $id = "") {
     }
 }
 
-function label_check($id, $texto, $plus = '', $size = 12) {
+function label_check($id, $texto, $plus = '', $size = 12)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = '';
@@ -1591,7 +1620,8 @@ function label_check($id, $texto, $plus = '', $size = 12) {
     echo div(ob_get_clean(), $size, ' mt-4 ');
 }
 
-function label_button($texto, $plus = "", $size = 3) {
+function label_button($texto, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = '';
@@ -1600,15 +1630,16 @@ function label_button($texto, $plus = "", $size = 3) {
         $plus .= ' class="btn btn-primary form-control label_button mt-4" ';
     }
     ob_start();
-    ?>
+?>
     <button data-button="true" type="button" <?= $plus ?>><?= $texto ?></button>
-    <?php
+<?php
     $html = ob_get_contents();
     ob_end_clean();
     echo div($html, $size);
 }
 
-function button($texto, $plus = "", $size = 3) {
+function button($texto, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = '';
@@ -1617,9 +1648,9 @@ function button($texto, $plus = "", $size = 3) {
         $plus .= ' class="btn btn-primary form-control" ';
     }
     ob_start();
-    ?>
+?>
     <button data-button="true" type="button" <?= $plus ?>><?= $texto ?></button>
-    <?php
+<?php
     $html = ob_get_contents();
     ob_end_clean();
     echo div($html, $size);
@@ -1634,7 +1665,8 @@ function button($texto, $plus = "", $size = 3) {
  * @param type $size colunas
  * @return type
  */
-function radio($id, $texto, $plus = "", $size = 3) {
+function radio($id, $texto, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = '';
@@ -1656,7 +1688,8 @@ function radio($id, $texto, $plus = "", $size = 3) {
  * @param type $size tamanho da coluna
  * @return type
  */
-function check($id, $texto, $plus = "", $size = 3) {
+function check($id, $texto, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = '';
@@ -1670,7 +1703,8 @@ function check($id, $texto, $plus = "", $size = 3) {
     echo div($html, $size);
 }
 
-function combo($id, $itens, $valoresItens = array(), $plus = "", $size = 3) {
+function combo($id, $itens, $valoresItens = array(), $plus = "", $size = 3)
+{
     if (is_numeric($valoresItens)) {
         $size = $valoresItens;
         $valoresItens = array();
@@ -1703,12 +1737,14 @@ function combo($id, $itens, $valoresItens = array(), $plus = "", $size = 3) {
     echo div($retorno, $size);
 }
 
-function label($texto = "", $size = 1) {
+function label($texto = "", $size = 1)
+{
     $retorno = "<label data-label='true' class='control-label'>$texto</label>";
     echo div($retorno, $size);
 }
 
-function text($id, $plus = "", $size = 3) {
+function text($id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1724,7 +1760,8 @@ function text($id, $plus = "", $size = 3) {
     echo div($html, $size);
 }
 
-function _form_parse_attr($attr = '') {
+function _form_parse_attr($attr = '')
+{
     $attributes = new SimpleXMLElement("<element $attr />");
     if (!isset($attributes['value'])) {
         $attributes['value'] = '';
@@ -1751,7 +1788,8 @@ function textarea($id, $plus = "", $size = 3)
     echo div($html, $size);
 }
 
-function mask($id, $mask = "999999", $plus = "", $size = 3) {
+function mask($id, $mask = "999999", $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1768,7 +1806,8 @@ function mask($id, $mask = "999999", $plus = "", $size = 3) {
     echo div($html, $size);
 }
 
-function number($id, $plus = "", $size = 3) {
+function number($id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1780,7 +1819,8 @@ function number($id, $plus = "", $size = 3) {
     echo div($html, $size);
 }
 
-function money($id, $digits = 2, $plus = "", $size = 3) {
+function money($id, $digits = 2, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1797,7 +1837,8 @@ function money($id, $digits = 2, $plus = "", $size = 3) {
     echo div($html, $size);
 }
 
-function password($id, $plus = "", $size = 3) {
+function password($id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1811,7 +1852,8 @@ function password($id, $plus = "", $size = 3) {
 
 //wtf ?
 
-function upload($id, $plus = "", $size = 3) {
+function upload($id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1824,11 +1866,13 @@ function upload($id, $plus = "", $size = 3) {
     echo div($r, $size);
 }
 
-function div($elemento = "", $tamanho = 2, $class = "") {
+function div($elemento = "", $tamanho = 2, $class = "")
+{
     return "<div class='col-md-$tamanho $class' >$elemento</div>\n";
 }
 
-function label_text($label, $id, $plus = "", $size = 3) {
+function label_text($label, $id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1843,7 +1887,8 @@ function label_text($label, $id, $plus = "", $size = 3) {
     echo div($html, $size, "form-group");
 }
 
-function label_textarea($label, $id, $plus = "", $size = 3) {
+function label_textarea($label, $id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1858,7 +1903,8 @@ function label_textarea($label, $id, $plus = "", $size = 3) {
     echo div($html, $size, "form-group");
 }
 
-function label_combo($label, $id, $itens = [], $valoresItens = [], $plus = "", $size = 3) {
+function label_combo($label, $id, $itens = [], $valoresItens = [], $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1873,7 +1919,8 @@ function label_combo($label, $id, $itens = [], $valoresItens = [], $plus = "", $
     echo div($html, $size, "form-group");
 }
 
-function label_upload($label, $id, $plus = "", $size = 3) {
+function label_upload($label, $id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1888,7 +1935,8 @@ function label_upload($label, $id, $plus = "", $size = 3) {
     echo div($html, $size, "form-group");
 }
 
-function label_password($label, $id, $plus = "", $size = 3) {
+function label_password($label, $id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1903,7 +1951,8 @@ function label_password($label, $id, $plus = "", $size = 3) {
     echo div($html, $size, "form-group");
 }
 
-function label_money($label, $id, $digits = 2, $plus = "", $size = 3) {
+function label_money($label, $id, $digits = 2, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1918,7 +1967,8 @@ function label_money($label, $id, $digits = 2, $plus = "", $size = 3) {
     echo div($html, $size, "form-group");
 }
 
-function label_mask($label, $id, $mask = "9999", $plus = "", $size = 3) {
+function label_mask($label, $id, $mask = "9999", $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1933,7 +1983,8 @@ function label_mask($label, $id, $mask = "9999", $plus = "", $size = 3) {
     echo div($html, $size, "form-group");
 }
 
-function label_number($label, $id, $plus = "", $size = 3) {
+function label_number($label, $id, $plus = "", $size = 3)
+{
     if (is_numeric($plus)) {
         $size = $plus;
         $plus = "";
@@ -1948,7 +1999,8 @@ function label_number($label, $id, $plus = "", $size = 3) {
     echo div($html, $size, "form-group");
 }
 
-function hidden($id, $value = "", $show = false) {
+function hidden($id, $value = "", $show = false)
+{
     echo "<input type='hidden' name='{$id}' value='$value' />" . (($show) ? $value : "");
 }
 

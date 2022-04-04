@@ -56,7 +56,8 @@ use ReflectionClass;
  * 
  * @mixin Database\BaseBuilder
  */
-class ORM {
+class ORM
+{
 
     /**
      * 
@@ -77,11 +78,13 @@ class ORM {
     /**
      * @return static
      */
-    static function init($db = null) {
+    static function init($db = null)
+    {
         return new static($db);
     }
 
-    public function __construct($db = null) {
+    public function __construct($db = null)
+    {
         $this->db = db_connect($db);
         $this->class = get_class($this);
         $c_name = explode('\\', $this->class);
@@ -105,7 +108,8 @@ class ORM {
         $this->fields = $fields;
     }
 
-    function create($prefix = null) {
+    function create($prefix = null)
+    {
         $rc = new ReflectionClass($this->class);
         $myClass = new $this->class();
         if (!$prefix) {
@@ -126,7 +130,6 @@ class ORM {
             $type = strval($t->getType());
             $is_relation = class_exists($type);
             if ($is_relation && !in_array($type, ['date', 'datetime', 'timestamp'])) {
-                $this->relation_fields[] = $name;
                 $c = new $type();
                 $c->create();
                 $type = $c->table . '.id';
@@ -141,7 +144,6 @@ class ORM {
             if (!$name)
                 continue;
             if (str_contains($type, 'Collection') || str_contains($type, '[]')) {
-                $this->relation_fields[] = $name;
                 continue;
             }
             if (in_array($name, ['id', 'created_at', 'updated_at']))
@@ -152,7 +154,6 @@ class ORM {
         try {
             $this->builder->create($fields);
         } catch (\Throwable $th) {
-            
         }
         if ($rc->hasMethod('seed'))
             if (!$this->first())
@@ -165,26 +166,30 @@ class ORM {
      * @param integer $id
      * @return self|parent|static
      */
-    function byId($id) {
+    function byId($id)
+    {
         $this->builder->where('id', $id);
         return $this->first();
     }
 
-    function insert(array $set = null, bool $escape = null) {
+    function insert(array $set = null, bool $escape = null)
+    {
         if ($this->builder->insert($set, $escape))
             return $this->byId($this->builder->selectMax('id')->first($this->class)->id);
         else
             return null;
     }
 
-    function relation($class, $fk, $id = null, $mode = 'many') {
+    function relation($class, $fk, $id = null, $mode = 'many')
+    {
         $c = new $class($this->db);
         if (!$id)
             $id = $this->id;
         return $c->where($fk, $id)->get();
     }
 
-    function relationOne($class, $fk, $id) {
+    function relationOne($class, $fk, $id)
+    {
         $c = new $class($this->db);
         return $c->where($fk, $id)->first();
     }
@@ -193,7 +198,8 @@ class ORM {
      * 
      * @return \Tightenco\Collect\Support\Collection|self|parent|static|array|array[static]
      */
-    function get(): \Tightenco\Collect\Support\Collection {
+    function get(): \Tightenco\Collect\Support\Collection
+    {
         $autoload = $this->autoload;
         $r = collect($this->builder->rs($this->class))->map(function ($v, $k) use ($autoload) {
             $r = (object) [];
@@ -212,8 +218,11 @@ class ORM {
      * 
      * @return self|this|null|parent|static
      */
-    function first() {
+    function first()
+    {
         $v = $this->builder->first($this->class);
+        if (!$v)
+            return null;
         $r = (object) [];
         foreach ($this->fields as $key => $value) {
             $name = $value['name'];
@@ -230,7 +239,8 @@ class ORM {
      * @param array $params
      * @return Database\BaseBuilder
      */
-    public function __call(string $name, array $params) {
+    public function __call(string $name, array $params)
+    {
         $result = null;
         if (method_exists($this->builder, $name))
             $result = $this->builder->{$name}(...$params);
@@ -239,8 +249,8 @@ class ORM {
         return $result;
     }
 
-    function toJson() {
+    function toJson()
+    {
         return json_encode($this);
     }
-
 }

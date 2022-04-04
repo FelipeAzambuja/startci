@@ -147,3 +147,5 @@ composer.lock
 tests
 app/Views/teste.php
 .user.ini
+cypress
+cypress.json
