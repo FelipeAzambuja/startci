@@ -13,15 +13,61 @@ StartCI is a fork of the CodeIgniter 4.1.5 framework, keeping all the features a
 
 ## ORM
 
-index.php is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+Apenas criando um arquivo na pasta app\Models com **extends** de ORM você 
+* No need to configure for public folder
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## ORM
 
-**Please** read the user guide for a better explanation of how CI4 works!
-The user guide updating and deployment is a bit awkward at the moment, but we are working on it!
+To use the ORM Model you must create a Class inside app\Models.
+Document your table with fields
+Create a function called seed to return the data to be inserted into the
+bank only once
+Define relationships with the __get magic method
+See the example below
+You can use the command ``` php spark orm create ModelName``` command to generate this file for you.
+
+```
+<?php
+
+namespace App\Models;
+
+/**
+ * @property integer $id AutoIncrement
+ * @property string $name
+ * @property int $intvalue
+ * @property string $created_at
+ * @property string $updated_at
+ * @table example
+ */
+class Example extends \CodeIgniter\ORM
+{
+
+    function seed()
+    {
+        return [
+            [
+                'name' => 'Example 1',
+                'intvalue' => 1
+            ],
+            [
+                'name' => 'Example 2',
+                'intvalue' => 2
+            ],
+        ];
+    }
+
+    function __get($name)
+    {
+        switch ($name) {
+            case '':
+                return '';
+                break;
+        }
+    }
+}
+
+```
+
 
 ## Repository Management
 

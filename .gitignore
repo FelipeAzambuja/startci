@@ -149,3 +149,6 @@ app/Views/teste.php
 .user.ini
 cypress
 cypress.json
+app/Common.php
+app/Models/Example.php
+app/Common.php
