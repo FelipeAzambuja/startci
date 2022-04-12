@@ -93,13 +93,19 @@ class ORM
             $this->table = strtolower($c_name);
         $this->builder = $this->db->table($this->table);
         $rc = new ReflectionClass($this->class);
+        if (!$models_create = cache()->get('startci_models_create'))
+            $models_create = [];
+        if (in_array($rc->getName(), $models_create))
+            return false;
+        $models_create[] = $rc->getName();
+        cache()->save('startci_models_create', $models_create, 3600);
         $factory = DocBlockFactory::createInstance();
         $docblock = $factory->create($rc->getDocComment() ?? '');
         $tags = $docblock->getTagsByName('property');
         foreach ($tags as $key => $value) {
             $type = strval($value->getType());
             $name = $value->getVariableName();
-            if (!class_exists($type) && !str_contains($type, 'Collection') && !str_contains($type, '[]'))
+            if (!str_contains($type, 'Collection') && !str_contains($type, '[]'))
                 $fields[] = [
                     'type' => $type,
                     'name' => $name

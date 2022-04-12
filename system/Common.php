@@ -1241,6 +1241,8 @@ function form($key = null, $default = null)
     if (apache_request_headers()['Content-Type'] ?? '' == 'application/json')
         $_JSON = json_decode(file_get_contents('php://input'), true) ?? [];
     if ($key != null) {
+        if (isset($_JSON[$key]))
+            return $_JSON[$key];
         return isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
     } else {
         return $_GET + $_POST + $_JSON;
@@ -2003,5 +2005,12 @@ function hidden($id, $value = "", $show = false)
 {
     echo "<input type='hidden' name='{$id}' value='$value' />" . (($show) ? $value : "");
 }
-
+if (!function_exists('sd')) {
+    function sd(...$v)
+    {
+        s(...$v);
+        exit;
+    }
+    Kint\Kint::$aliases[] = 'sd';
+}
 //</newbgp>

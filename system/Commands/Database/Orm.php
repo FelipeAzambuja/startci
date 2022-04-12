@@ -79,6 +79,7 @@ class Orm extends BaseCommand
     }
     function create($params)
     {
+        
         if (!isset($params[1]))
             $params[1] = CLI::prompt('Class name ', null, 'required');
         $table = strtolower($params[1]);
@@ -135,6 +136,7 @@ class Orm extends BaseCommand
     }
     function up()
     {
+        cache()->delete('startci_models_create');
         $con = db_connect();
         try {
             $con->simpleQuery("SET foreign_key_checks = 0");
