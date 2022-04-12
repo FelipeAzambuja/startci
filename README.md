@@ -1,35 +1,17 @@
-# CodeIgniter 4 Development
+![LOGO](https://newbgp.com.br/images/logo%20ci.svg)
+# StartCI 4
+    CodeIgniter with batteries included.
+## What is StartCI?
+StartCI is a fork of the CodeIgniter 4.1.5 framework, keeping all the features and adding new ones.
+### Main differences
 
-[![Build Status](https://travis-ci.org/codeigniter4/CodeIgniter4.svg?branch=develop)](https://travis-ci.org/codeigniter4/CodeIgniter4)
-[![Coverage Status](https://coveralls.io/repos/github/codeigniter4/CodeIgniter4/badge.svg?branch=develop)](https://coveralls.io/github/codeigniter4/CodeIgniter4?branch=develop)
-[![Downloads](https://poser.pugx.org/codeigniter4/framework/downloads)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/codeigniter4/CodeIgniter4)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub stars](https://img.shields.io/github/stars/codeigniter4/CodeIgniter4)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub license](https://img.shields.io/github/license/codeigniter4/CodeIgniter4)](https://github.com/codeigniter4/CodeIgniter4/blob/develop/license.txt)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/codeigniter4/CodeIgniter4/pulls)
-<br>
+* Functions to speed up work with the database
+* Model, seed and migration in a single file
+* Library to facilitate communication in AJAX
+* Workflow Integration with NuxtJS
+* No need to configure for public folder
 
-## What is CodeIgniter?
-
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible, and secure.
-More information can be found at the [official site](http://codeigniter.com).
-
-This repository holds the source code for CodeIgniter 4 only.
-Version 4 is a complete rewrite to bring the quality and the code into a more modern version,
-while still keeping as many of the things intact that has made people love the framework over the years.
-
-More information about the plans for version 4 can be found in [the announcement](http://forum.codeigniter.com/thread-62615.html) on the forums.
-
-### Documentation
-
-The [User Guide](https://codeigniter4.github.io/userguide/) is the primary documentation for CodeIgniter 4.
-
-The current **in-progress** User Guide can be found [here](https://codeigniter4.github.io/CodeIgniter4/).
-As with the rest of the framework, it is a work in progress, and will see changes over time to structure, explanations, etc.
-
-You might also be interested in the [API documentation](https://codeigniter4.github.io/api/) for the framework components.
-
-## Important Change with index.php
+## ORM
 
 index.php is no longer in the root of the project! It has been moved inside the *public* folder,
 for better security and separation of components.
@@ -98,3 +80,7 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 ## Running CodeIgniter Tests
 
 Information on running the CodeIgniter test suite can be found in the [README.md](tests/README.md) file in the tests directory.
+
+
+# Logo made by Kubanek / Freepik
+https://br.freepik.com/kubanek

@@ -2756,6 +2756,7 @@ class BaseBuilder
 
         return $wrapped ? '(' . $subquery . ')' : $subquery;
     }
+    
     //<newbgp>
     public function setTableName($tableName)
     {
