@@ -113,7 +113,11 @@ class ORM
         }
         $this->fields = $fields;
     }
-
+    function load($prop)
+    {
+        $this->autoload[] = $prop;
+        return $this;
+    }
     function create($prefix = null)
     {
         $rc = new ReflectionClass($this->class);
@@ -156,13 +160,9 @@ class ORM
                 continue;
             $fields[$name] = $type;
         }
-
-        try {
-            $this->builder->create($fields);
-        } catch (\Throwable $th) {
-        }
+        $this->builder->create($fields);        
         if ($rc->hasMethod('seed'))
-            if (!$this->first())
+            if (!$this->db->table($this->table)->first())
                 if ($seed = $myClass->seed())
                     $this->builder->insertBatch($seed);
     }
@@ -235,7 +235,10 @@ class ORM
             $r->{$name} = $v->{$name};
         }
         foreach ($this->autoload as $key => $value)
-            $r->{$value} = $v->{$value};
+            try {
+                $r->{$value} = $v->__get($value);
+            } catch (\Throwable $th) {
+            }
         return $r;
     }
 

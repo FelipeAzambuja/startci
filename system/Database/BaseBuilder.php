@@ -2870,7 +2870,7 @@ class BaseBuilder
                         ]
                     ]);
                     $forge->addKey($name);
-                    $forge->addForeignKey($name, $type[0], $type[1]);
+                    $forge->addForeignKey($name, $type[0], $type[1],'NO ACTION','NO ACTION');
                     $forge->addColumn($table, [
                         $name => [
                             'type' => 'INT',
@@ -2898,7 +2898,7 @@ class BaseBuilder
                     ]);
                     $type = explode('.', $type);
                     $forge->addKey($name);
-                    $forge->addForeignKey($name, $type[0], $type[1]);
+                    $forge->addForeignKey($name, $type[0], $type[1],'NO ACTION','NO ACTION');
                 } else {
                     $forge->addField([
                         $name => [

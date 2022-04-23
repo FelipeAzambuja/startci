@@ -11,6 +11,7 @@
 
 use CodeIgniter\Cache\CacheInterface;
 use CodeIgniter\Config\Factories;
+use CodeIgniter\Config\Services as ConfigServices;
 use CodeIgniter\Cookie\Cookie;
 use CodeIgniter\Cookie\CookieStore;
 use CodeIgniter\Cookie\Exceptions\CookieException;
@@ -1278,14 +1279,16 @@ function form_error($field, $template = 'single')
 
 function jwt_encode($data)
 {
-    return JWT::encode($data, env('encryption.key'), 'HS256');
+    return JWT::encode($data, env('encryption.key') ?? 'startci', 'HS256');
 }
 
 function jwt_decode($data)
 {
-    return JWT::decode($data, new Key(env('encryption.key'), 'HS256'));
+    return JWT::decode($data, new Key(env('encryption.key') ?? 'startci', 'HS256'));
 }
-
+/**
+ * @return object|\App\Models\Users
+ */
 function user($table = 'users')
 {
     $id = null;
@@ -1299,10 +1302,15 @@ function user($table = 'users')
     } catch (\Throwable $th) {
         throw $th;
     }
-    if ($id)
-        return table($table)->where('id', $id)->get()->getFirstRow();
-    else
+    if ($id) {
+        if (class_exists('\App\Models\Users')) {
+            return \App\Models\Users::init()->byId($id);
+        } else {
+            return table($table)->where('id', $id)->get()->getFirstRow();
+        }
+    } else {
         return false;
+    }
 }
 
 /**
@@ -1466,7 +1474,10 @@ function css_build(array $files, $id = '')
         echo "<link rel='stylesheet' href='/public/build$id.css' />";
     $css = '';
     foreach ($files as $key => $f)
-        $css .= file_get_contents($f, false, $c) . PHP_EOL;
+        if (file_exists($f))
+            $css .= file_get_contents($f) . PHP_EOL;
+        else
+            $css .= ConfigServices::curlrequest()->get($f)->getBody() . PHP_EOL;
     if (!$css)
         return '';
     file_put_contents("public/build$id.css", $css);
@@ -1485,7 +1496,10 @@ function js_build(array $files, $id = '')
         echo "<script src='/public/build$id.js'></script>";
     $js = '';
     foreach ($files as $key => $f)
-        $js .= file_get_contents($f, false, $c) . PHP_EOL;
+        if (file_exists($f))
+            $js .= file_get_contents($f) . PHP_EOL;
+        else
+            $js .= ConfigServices::curlrequest()->get($f)->getBody() . PHP_EOL;
     if (!$js)
         return;
     file_put_contents("public/build$id.js", $js);
