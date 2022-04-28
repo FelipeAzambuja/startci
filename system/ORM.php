@@ -211,7 +211,8 @@ class ORM
             $r = (object) [];
             foreach ($this->fields as $key => $value) {
                 $name = $value['name'];
-                $r->{$name} = $v->{$name};
+                if (!in_array($name, $autoload))
+                    $r->{$name} = $v->{$name};
             }
             foreach ($autoload as $key => $value)
                 try {
@@ -235,7 +236,8 @@ class ORM
         $r = (object) [];
         foreach ($this->fields as $key => $value) {
             $name = $value['name'];
-            $r->{$name} = $v->{$name};
+            if (!in_array($name, $this->autoload))
+                $r->{$name} = $v->{$name};
         }
         foreach ($this->autoload as $key => $value)
             try {
