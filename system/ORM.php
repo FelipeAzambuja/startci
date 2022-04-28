@@ -214,7 +214,10 @@ class ORM
                 $r->{$name} = $v->{$name};
             }
             foreach ($autoload as $key => $value)
-                $r->{$value} = $v->{$value};
+                try {
+                    $r->{$value} = $v->__get($value);
+                } catch (\Throwable $th) {
+                }
             return $r;
         });
         return $r;
