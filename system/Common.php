@@ -2019,12 +2019,12 @@ function hidden($id, $value = "", $show = false)
 {
     echo "<input type='hidden' name='{$id}' value='$value' />" . (($show) ? $value : "");
 }
-if (!function_exists('sd')) {
-    function sd(...$v)
-    {
-        s(...$v);
-        exit;
-    }
-    Kint\Kint::$aliases[] = 'sd';
-}
+// if (!function_exists('sd')) {
+//     function sd(...$v)
+//     {
+//         s(...$v);
+//         exit;
+//     }
+//     Kint\Kint::$aliases[] = 'sd';
+// }
 //</newbgp>
