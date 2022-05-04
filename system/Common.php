@@ -771,7 +771,7 @@ if (!function_exists('log_message')) {
      *
      * @return mixed
      */
-    function log_message(string $level, string $message, array $context = [])
+    function log_message(string $level, $message, array $context = [])
     {
         // When running tests, we want to always ensure that the
         // TestLogger is running, which provides utilities for
