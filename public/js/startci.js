@@ -80,15 +80,17 @@ startci.ajaxels = function (e) {
                 },
                 dataType: 'script',
                 success: function (response) {
-                    if ($(call).attr(startci.prefix + 'lock') != undefined)
+                    if ($(call).attr(startci.prefix + 'lock') != undefined) {
                         $(call).prop('disabled', false);
-                    $(call).html(html);
+                        $(call).html(html);
+                    }
                 },
                 error: function (response) {
                     console.error(JSON.parse(response.responseText));
-                    if ($(call).attr(startci.prefix + 'lock') != undefined)
+                    if ($(call).attr(startci.prefix + 'lock') != undefined) {
                         $(call).prop('disabled', false);
-                    $(call).html(html);
+                        $(call).html(html);
+                    }
                 }
             });
         };
