@@ -29,7 +29,7 @@ class Controller
      *
      * @var array
      */
-    protected $helpers = [];
+    protected $helpers = ['array','cookie','date','filesystem','form','html','inflector','number','test','security','url','xml'];
 
     /**
      * Instance of the main Request object.

@@ -2,6 +2,7 @@
 
 namespace CodeIgniter;
 
+use CodeIgniter\CLI\CLI;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
 use phpDocumentor\Reflection\DocBlockFactory;
 use ReflectionClass;
