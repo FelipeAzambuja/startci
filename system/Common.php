@@ -1297,8 +1297,11 @@ function user($table = 'users')
     try {
         // s(substr(getallheaders()['Authorization'], strlen("Bearer ")));
         // die;
-        if (isset(getallheaders()['Authorization']))
+        if (isset(getallheaders()['Authorization'])) {
             $id = jwt_decode(substr(getallheaders()['Authorization'], strlen("Bearer ")));
+            if (is_object($id))
+                $id = $id->id;
+        }
     } catch (\Throwable $th) {
         throw $th;
     }
