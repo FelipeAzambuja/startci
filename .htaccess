@@ -15,7 +15,9 @@ Options All -Indexes
 	# change the following line to match the subfolder you need.
 	# http://httpd.apache.org/docs/current/mod/mod_rewrite.html#rewritebase
 	# RewriteBase /
-
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)\.(gif|jpg|png|jpeg|css|js|swf|svg|woff2|ttf)$ /public/$1.$2 [L,NC]
 	# Redirect Trailing Slashes...
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_URI} (.+)/$
