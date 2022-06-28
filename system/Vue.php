@@ -13,25 +13,29 @@ namespace CodeIgniter;
  *
  * @author felipe
  */
-class Vue {
+class Vue
+{
 
     var $varname = '';
     var $data = [];
 
-    function __construct($varname = 'vue') {
+    function __construct($varname = 'vue')
+    {
         $this->varname = $varname;
     }
 
-    function set($var, $value) {
+    function set($var, $value)
+    {
         $value = json_encode($value);
         echo "{$this->varname}.{$var} = {$value};";
     }
 
-    function get($key = null) {
+    function get($key = null)
+    {
+        $v = json_decode($_POST['vue'][$this->varname]);
         if ($key)
-            return $_POST['vue'][$this->varname][$key] ?? null;
+            return $v[$key] ?? null;
         else
-            return $_POST['vue'][$this->varname] ?? null;
+            return $v ?? null;
     }
-
 }

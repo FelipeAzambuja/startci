@@ -75,13 +75,80 @@ class ORM
     public $table = '';
     public $autoload = [];
     public $fields = [];
-
+    public $data = [];
     /**
      * @return static
      */
     static function init($db = null)
     {
         return new static($db);
+    }
+    function fromObject(object $o)
+    {
+        foreach (get_object_vars($o) as $key => $value) {
+            $this->{$key} = $value;
+        }
+        return $this;
+    }
+    function fromArray(array $o)
+    {
+        foreach ($o as $key => $value) {
+            $this->{$key} = $value;
+        }
+        return $this;
+    }
+
+    function onSave()
+    {
+        return true;
+    }
+
+    function onRemove()
+    {
+        return true;
+    }
+
+    function onSet($name, $value)
+    {
+        return $value;
+    }
+
+    function __set($name, $value)
+    {
+        $value = $this->onSet($name,$value);
+        $this->data[$name] = $value;
+        $this->{$name} = $value;
+    }
+
+    function save()
+    {
+        if ($this->onSave() === false)
+            return false;
+        $d = [];
+        foreach ($this->data as $key => $value) {
+            if (isset($value->id))
+                $value = $value->id;
+            $d[$key] = $value;
+        }
+        if ($d['id'] ?? false) {
+            $this->where('id', $d['id'])->update($d);
+            return $this;
+        } else {
+            if ($this->insert($d))
+                return $this->byId($this->builder->selectMax('id')->first($this->class)->id);
+            else
+                return false;
+        }
+    }
+
+    function remove()
+    {
+        if ($this->onRemove() === false)
+            return false;
+        if ($this->data['id'] ?? false) {
+            return $this->where('id', $this->data['id'])->delete();
+        }
+        return false;
     }
 
     public function __construct($db = null)
@@ -94,6 +161,7 @@ class ORM
             $this->table = strtolower($c_name);
         $this->builder = $this->db->table($this->table);
         $rc = new ReflectionClass($this->class);
+
         $factory = DocBlockFactory::createInstance();
         $docblock = $factory->create($rc->getDocComment() ?? '');
         $tags = $docblock->getTagsByName('property');
@@ -179,13 +247,6 @@ class ORM
         return $this->first();
     }
 
-    function insert(array $set = null, bool $escape = null)
-    {
-        if ($this->builder->insert($set, $escape))
-            return $this->byId($this->builder->selectMax('id')->first($this->class)->id);
-        else
-            return null;
-    }
 
     function relation($class, $fk, $id = null, $mode = 'many')
     {
@@ -220,6 +281,8 @@ class ORM
                     $r->{$value} = $v->__get($value);
                 } catch (\Throwable $th) {
                 }
+            $o = new $this->class();
+            $r = $o->fromObject($r);
             return $r;
         });
         return $r;
@@ -245,7 +308,9 @@ class ORM
                 $r->{$value} = $v->__get($value);
             } catch (\Throwable $th) {
             }
-        return $r;
+        $o = new $this->class();
+        $r = $o->fromObject($r);
+        return  $r;
     }
 
     /**
@@ -257,6 +322,7 @@ class ORM
     public function __call(string $name, array $params)
     {
         $result = null;
+
         if (method_exists($this->builder, $name))
             $result = $this->builder->{$name}(...$params);
         if (is_object($result) && !$result instanceof ORM)

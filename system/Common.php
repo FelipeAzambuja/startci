@@ -1885,9 +1885,9 @@ function upload($id, $plus = "", $size = 3)
     echo div($r, $size);
 }
 
-function div($elemento = "", $tamanho = 2, $class = "")
+function div($elemento = "", $tamanho = 2, $class = "",$plus="")
 {
-    return "<div class='col-md-$tamanho $class' >$elemento</div>\n";
+    return "<div class='col-md-$tamanho $class' $plus >$elemento</div>\n";
 }
 
 function label_text($label, $id, $plus = "", $size = 3)

@@ -62,7 +62,7 @@ startci.ajaxels = function (e) {
                 if (window[i] !== null) {
                     try {
                         if (window[i].$data !== undefined) {
-                            startci.data.vue[i] = JSON.parse(JSON.stringify(window[i].$data));
+                            startci.data.vue[i] = (JSON.stringify(window[i].$data));
                         }
                     } catch (e) {
 
