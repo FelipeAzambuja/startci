@@ -115,16 +115,18 @@ class ORM
 
     function __set($name, $value)
     {
-        $value = $this->onSet($name,$value);
+        $value = $this->onSet($name, $value);
         $this->data[$name] = $value;
         $this->{$name} = $value;
     }
 
-    function save()
+    function save($data = [])
     {
         if ($this->onSave() === false)
             return false;
         $d = [];
+        if ($data && !$this->data)
+            $this->data = $data;
         foreach ($this->data as $key => $value) {
             if (isset($value->id))
                 $value = $value->id;
