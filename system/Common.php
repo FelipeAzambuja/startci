@@ -1381,6 +1381,8 @@ function carbon(string $data = null)
 
 function is_date($format, $date)
 {
+    if (!$date)
+        return false;
     return (DateTime::createFromFormat($format, $date)) !== false;
 }
 
@@ -2030,4 +2032,6 @@ function hidden($id, $value = "", $show = false)
 //     }
 //     Kint\Kint::$aliases[] = 'sd';
 // }
+
+
 //</newbgp>

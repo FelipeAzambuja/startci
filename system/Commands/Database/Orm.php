@@ -134,6 +134,93 @@ class Orm extends BaseCommand
         } catch (\Throwable $th) {
         }
     }
+
+
+    function read()
+    {
+        $con = db_connect();
+        $tables = $con->listTables();
+
+        foreach ($tables as $key => $table) {
+            $className = ucfirst($table);
+            $file = '';
+            $file .= "<?php" . PHP_EOL;
+            $file .= "" . PHP_EOL;
+            $file .= "namespace App\Models;" . PHP_EOL;
+            $file .= "" . PHP_EOL;
+            $file .= "/**" . PHP_EOL;
+            $file .= " * @property integer \$id AutoIncrement" . PHP_EOL;
+            $fields = $con->getFieldData($table);
+            $have_id = count(array_values(array_filter($fields, function ($v) {
+                return in_array($v->name, ['id']);
+            }))) == 1;
+            $fields = array_values(array_filter($fields, function ($v) {
+                return !in_array($v->name, ['created_at', 'updated_at', 'id']);
+            }));
+            $select_fields = [];
+            foreach ($fields as $key => $field) {
+                $name = $field->name;
+                $type = $field->type;
+                if (!(str_contains($type, 'blob') || str_contains($type, 'long'))) {
+                    $select_fields[] = $name;
+                }
+                switch ($type) {
+                    case 'tinyint':
+                    case 'int':
+                        $type = 'integer';
+                        break;
+                    case 'varchar':
+                    case 'text':
+                        $type = 'string';
+                        break;
+                }
+                $file .= " * @property $type \$" . $name . PHP_EOL;
+            }
+
+            $file .= " * @property string \$created_at" . PHP_EOL;
+            $file .= " * @property string \$updated_at" . PHP_EOL;
+            $file .= " * @table $table" . PHP_EOL;
+            $file .= " */" . PHP_EOL;
+            $file .= "class $className extends \CodeIgniter\ORM {" . PHP_EOL;
+            $file .= "" . PHP_EOL;
+            $file .= "    function seed()" . PHP_EOL;
+            $file .= "    {" . PHP_EOL;
+            $file .= "        return [" . PHP_EOL;
+            try {
+                $rs = $con->table($table)->limit(10)->select($select_fields);
+                if ($have_id)
+                    $rs->orderBy('id', 'ASC');
+                foreach ($rs->rs() as $key => $value) {
+                    $file .= "[        " . PHP_EOL;
+                    foreach ($select_fields as $key => $f) {
+                        $file .= "   '$f' => '" . addslashes($value->{$f}) . "'," . PHP_EOL;
+                    }
+                    $file .= "],        " . PHP_EOL;
+                }
+            } catch (\Throwable $th) {
+                throw $th;
+            }
+            $file .= "        " . PHP_EOL;
+            $file .= "        ];" . PHP_EOL;
+
+            $file .= "    }" . PHP_EOL;
+            $file .= "" . PHP_EOL;
+            $file .= "" . PHP_EOL;
+            $file .= "    function __get(\$name)" . PHP_EOL;
+            $file .= "    {" . PHP_EOL;
+            $file .= "        switch(\$name){" . PHP_EOL;
+            $file .= "            case '':" . PHP_EOL;
+            $file .= "                return '';" . PHP_EOL;
+            $file .= "                break;" . PHP_EOL;
+            $file .= "        }" . PHP_EOL;
+            $file .= "    }" . PHP_EOL;
+            $file .= "" . PHP_EOL;
+            $file .= "}" . PHP_EOL;
+            file_put_contents("../app/Models/$className.php", $file);
+            // file_put_contents("../debug/$className.php", $file);
+        }
+    }
+
     function up()
     {
         cache()->delete('startci_models_create');

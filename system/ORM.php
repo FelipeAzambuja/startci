@@ -232,6 +232,9 @@ class ORM
             $fields[$name] = $type;
         }
         $this->builder->create($fields);
+
+//TODO: Refatorar para criar 
+
         if ($rc->hasMethod('seed'))
             if (!$this->db->table($this->table)->first())
                 if ($seed = $myClass->seed())
