@@ -125,13 +125,13 @@ class ORM
         if ($this->onSave() === false)
             return false;
         $d = [];
-        if ($data && !$this->data)
-            $this->data = $data;
+
         foreach ($this->data as $key => $value) {
             if (isset($value->id))
                 $value = $value->id;
             $d[$key] = $value;
         }
+        $d = array_merge($d, $data);
         if ($d['id'] ?? false) {
             $this->where('id', $d['id'])->update($d);
             return $this;
@@ -233,7 +233,7 @@ class ORM
         }
         $this->builder->create($fields);
 
-//TODO: Refatorar para criar 
+        //TODO: Refatorar para criar 
 
         if ($rc->hasMethod('seed'))
             if (!$this->db->table($this->table)->first())
