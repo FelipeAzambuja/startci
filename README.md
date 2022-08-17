@@ -67,7 +67,8 @@ class Example extends \CodeIgniter\ORM
 }
 
 ```
-
+rewrite ^/(.*)\.(gif|jpg|png|jpeg|css|js|swf|svg|woff2|ttf)$ /public/$1.$2 last;
+rewrite ^/([\s\S]*)$ /index.php?/$1 last;
 
 ## Repository Management
 
