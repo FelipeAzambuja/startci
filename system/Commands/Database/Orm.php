@@ -223,8 +223,10 @@ class Orm extends BaseCommand
 
     function up()
     {
+
         cache()->delete('startci_models_create');
         $con = db_connect();
+        $con->transBegin();
         try {
             $con->simpleQuery("SET foreign_key_checks = 0");
         } catch (\Throwable $th) {
@@ -267,5 +269,6 @@ class Orm extends BaseCommand
         } catch (\Throwable $th) {
             //throw $th;
         }
+        $con->transCommit();
     }
 }

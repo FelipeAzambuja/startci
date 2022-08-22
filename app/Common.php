@@ -13,3 +13,11 @@
  *
  * @see: https://codeigniter4.github.io/CodeIgniter4/
  */
+
+/** 
+ * @return \App\Models\Users
+ */
+function model_users(){
+  return new \App\Models\Users();
+}
+

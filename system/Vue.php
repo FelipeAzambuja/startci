@@ -32,7 +32,7 @@ class Vue
 
     function get($key = null)
     {
-        $v = json_decode($_POST['vue'][$this->varname]);
+        $v = json_decode($_POST['vue'][$this->varname],true);
         if ($key)
             return $v[$key] ?? null;
         else

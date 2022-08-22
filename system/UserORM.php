@@ -59,24 +59,36 @@ use ReflectionClass;
 class UserORM extends ORM
 {
 
-    function login_email($email, $password)
+    function login_email($email, $password, $jwt = false)
     {
         if ($user = $this->where([
             'email' => $email,
             'password' => md5($password)
         ])->first()) {
+            if($jwt){
+                header('Content-Type: application/json');
+                die(json_encode([
+                    'token' => jwt_encode(['id'=>$user->id])
+                ]));
+            }
             session()->set('id', $user->id);
             return true;
         }
         return false;
     }
 
-    function login_name($name, $password)
+    function login_name($name, $password, $jwt = false)
     {
         if ($user = $this->where([
             'name' => $name,
             'password' => md5($password)
         ])->first()) {
+            if($jwt){
+                header('Content-Type: application/json');
+                die(json_encode([
+                    'token' => jwt_encode(['id'=>$user->id])
+                ]));
+            }
             session()->set('id', $user->id);
             return true;
         }
@@ -92,7 +104,7 @@ class UserORM extends ORM
     {
         if ($this->where([
             'email' => $email,
-            'password' => password_hash($password,PASSWORD_BCRYPT)
+            'password' => md5($password)
         ])->first())
             return true;
         return false;
@@ -102,7 +114,7 @@ class UserORM extends ORM
     {
         if ($this->where([
             'name' => $name,
-            'password' => password_hash($password,PASSWORD_BCRYPT)
+            'password' => md5($password)
         ])->first())
             return true;
         return false;
@@ -118,7 +130,8 @@ class UserORM extends ORM
         return json_decode($this->roles) ?? [];
     }
 
-    function has_role()
+    function has_role($role)
     {
+        return in_array($role, $this->get_roles());
     }
 }
