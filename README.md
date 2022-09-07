@@ -128,6 +128,6 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 
 Information on running the CodeIgniter test suite can be found in the [README.md](tests/README.md) file in the tests directory.
 
-.......
+........
 # Logo made by Kubanek / Freepik
 https://br.freepik.com/kubanek
