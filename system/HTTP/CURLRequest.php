@@ -349,6 +349,7 @@ class CURLRequest extends Request
         $curlOptions[CURLOPT_RETURNTRANSFER] = true;
         $curlOptions[CURLOPT_HEADER]         = true;
         $curlOptions[CURLOPT_FRESH_CONNECT]  = true;
+        $curlOptions[CURLOPT_SSL_CIPHER_LIST]  = 'DEFAULT@SECLEVEL=1';
         // Disable @file uploads in post data.
         $curlOptions[CURLOPT_SAFE_UPLOAD] = true;
 

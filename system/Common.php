@@ -35,6 +35,8 @@ use Config\View;
 use Laminas\Escaper\Escaper;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Kint\Kint;
+
 // Services Convenience Functions
 
 if (!function_exists('app_timezone')) {
@@ -1239,14 +1241,18 @@ function is_get()
 function form($key = null, $default = null)
 {
     $_JSON = [];
-    if (apache_request_headers()['Content-Type'] ?? '' == 'application/json')
-        $_JSON = json_decode(file_get_contents('php://input'), true) ?? [];
+    if (function_exists('apache_request_headers')) {
+        if (apache_request_headers()['Content-Type'] ?? '' == 'application/json') {
+            $_JSON = json_decode(file_get_contents('php://input'), true) ?? [];
+        }
+    }
+    $_REQUEST = array_merge($_JSON, $_REQUEST, $_POST, $_GET);
     if ($key != null) {
-        if (isset($_JSON[$key]))
-            return $_JSON[$key];
+        if (isset($_REQUEST[$key]))
+            return $_REQUEST[$key];
         return isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
     } else {
-        return $_GET + $_POST + $_JSON;
+        return $_REQUEST;
     }
 }
 
@@ -1271,6 +1277,10 @@ function valid(): \CodeIgniter\Validation\Validation
     $valid = Services::validation();
     return $valid;
 }
+function rule_maker(array $rules): string
+{
+    return implode('|', $rules);
+}
 
 function form_error($field, $template = 'single')
 {
@@ -1286,55 +1296,60 @@ function jwt_decode($data)
 {
     return JWT::decode($data, new Key(env('encryption.key') ?? 'startci', 'HS256'));
 }
-/**
- * @return object|\App\Models\Users
- */
-function user($table = 'users')
-{
-    $id = null;
-    if (session()->has('id'))
-        $id = session()->get('id');
-    try {
-        // s(substr(getallheaders()['Authorization'], strlen("Bearer ")));
-        // die;
-        if (isset(getallheaders()['Authorization'])) {
-            $id = jwt_decode(substr(getallheaders()['Authorization'], strlen("Bearer ")));
-            if (is_object($id))
-                $id = $id->id;
-        }
-    } catch (\Throwable $th) {
-        throw $th;
-    }
-    if ($id) {
-        if (class_exists('\App\Models\Users')) {
-            return \App\Models\Users::init()->byId($id);
-        } else {
-            return table($table)->where('id', $id)->get()->getFirstRow();
-        }
-    } else {
-        return false;
-    }
-}
 
-/**
- * 
- * @param string $data
- * @return string|boolean
- */
-function excel_date($data, $format = 'd/m/Y', $erro = false)
-{
-    if (!$format) {
-        $format = 'd/m/Y';
-    }
-    $data_excel = \Carbon\Carbon::create(1900, 1, 1);
-    if (is_numeric($data)) {
-        return $data_excel->clone()->addDays(($data - 2))->format($format);
-    } elseif (is_date('d/m/Y', $data)) {
-        return \Carbon\Carbon::createFromFormat('d/m/Y', $data)->format($format);
-    } elseif (is_date('Y-m-d', $data)) {
-        return \Carbon\Carbon::createFromFormat('Y-m-d', $data)->format($format);
-    } else {
-        return $erro;
+
+if (!function_exists('user')) {
+    /**
+     * @return object|\App\Models\Users
+     */
+    function user($table = 'users')
+    {
+        $id = null;
+        if (session()->has('id'))
+            $id = session()->get('id');
+        try {
+            // s(substr(getallheaders()['Authorization'], strlen("Bearer ")));
+            // die;
+            if (isset(getallheaders()['Authorization'])) {
+                $id = jwt_decode(substr(getallheaders()['Authorization'], strlen("Bearer ")));
+                if (is_object($id))
+                    $id = $id->id;
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+        if ($id) {
+            if (class_exists('\App\Models\Users')) {
+                return \App\Models\Users::init()->byId($id);
+            } else {
+                return table($table)->where('id', $id)->get()->getFirstRow();
+            }
+        } else {
+            return false;
+        }
+    } 
+}
+if (!function_exists('excel_date')) {
+    /**
+     * 
+     * @param string $data
+     * @return string|boolean
+     */
+    function excel_date($data, $format = 'd/m/Y', $erro = false)
+    {
+        if (!$format) {
+            $format = 'd/m/Y';
+        }
+        $data_excel = \Carbon\Carbon::create(1900, 1, 1);
+        if (is_numeric($data)) {
+            return $data_excel->clone()->addDays(($data - 2))->format($format);
+        } elseif (is_date('d/m/Y', $data)) {
+            return \Carbon\Carbon::createFromFormat('d/m/Y', $data)->format($format);
+        } elseif (is_date('Y-m-d', $data)) {
+            return \Carbon\Carbon::createFromFormat('Y-m-d', $data)->format($format);
+        } else {
+            return $erro;
+        }
     }
 }
 
@@ -1887,7 +1902,7 @@ function upload($id, $plus = "", $size = 3)
     echo div($r, $size);
 }
 
-function div($elemento = "", $tamanho = 2, $class = "",$plus="")
+function div($elemento = "", $tamanho = 2, $class = "", $plus = "")
 {
     return "<div class='col-md-$tamanho $class' $plus >$elemento</div>\n";
 }

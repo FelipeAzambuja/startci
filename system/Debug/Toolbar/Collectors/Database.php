@@ -138,6 +138,8 @@ class Database extends BaseCollector
             $line = [];
 
             foreach ($query['trace'] as &$traceLine) {
+                if(!isset($traceLine['file']))
+                    continue;
                 // Clean up the file paths
                 $traceLine['file'] = str_ireplace(APPPATH, 'APPPATH/', $traceLine['file']);
                 $traceLine['file'] = str_ireplace(SYSTEMPATH, 'SYSTEMPATH/', $traceLine['file']);

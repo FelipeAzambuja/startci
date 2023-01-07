@@ -291,7 +291,7 @@ class BaseBuilder
 
         $this->from($tableName);
 
-        if (! empty($options)) {
+        if (!empty($options)) {
             foreach ($options as $key => $value) {
                 if (property_exists($this, $key)) {
                     $this->{$key} = $value;
@@ -2834,13 +2834,16 @@ class BaseBuilder
     /**
      * Sets a test mode status.
      *
-     * @param boolean $mode Mode to set
+     * @param array $fields Array of fields
+     * @param boolean $pk create or not pk 
      *
      * @return BaseBuilder
      */
-    public function create(array $fields)
+    public function create(array $fields, $pk = true)
     {
         $table = $this->tableName;
+
+
         $forge = ConfigDatabase::forge($this->db);
         $db = $this->db;
         $tables = $db->listTables();
@@ -2857,26 +2860,29 @@ class BaseBuilder
         $fields = $f;
 
         if (in_array($table, $tables)) {
-            $field_names = array_unique($db->getFieldNames($table));
+            $field_names = array_unique($db->getFieldNames($table) ?? []);
+
             foreach ($fields as $name => $type) {
                 if (in_array($name, $field_names))
                     continue;
                 if (strpos($type, '.') !== false) {
-                    $type = explode('.', $type);
-                    $forge->addField([
-                        $name => [
-                            'type' => 'INT',
-                            'null' => true,
-                        ]
-                    ]);
-                    $forge->addKey($name);
-                    $forge->addForeignKey($name, $type[0], $type[1],'NO ACTION','NO ACTION');
-                    $forge->addColumn($table, [
-                        $name => [
-                            'type' => 'INT',
-                            'null' => true
-                        ]
-                    ]);
+                    if ($pk) {
+                        $type = explode('.', $type);
+                        $forge->addField([
+                            $name => [
+                                'type' => 'INT',
+                                'null' => true,
+                            ]
+                        ]);
+                        $forge->addKey($name);
+                        $forge->addForeignKey($name, $type[0], $type[1], 'NO ACTION', 'NO ACTION');
+                        $forge->addColumn($table, [
+                            $name => [
+                                'type' => 'INT',
+                                'null' => true
+                            ]
+                        ]);
+                    }
                 } else {
                     $forge->addColumn($table, [
                         $name => [
@@ -2890,15 +2896,17 @@ class BaseBuilder
             $forge->addField('id');
             foreach ($fields as $name => $type) {
                 if (strpos($type, '.') !== false) {
-                    $forge->addField([
-                        $name => [
-                            'type' => 'INT',
-                            'null' => true
-                        ]
-                    ]);
-                    $type = explode('.', $type);
-                    $forge->addKey($name);
-                    $forge->addForeignKey($name, $type[0], $type[1],'NO ACTION','NO ACTION');
+                    if ($pk) {
+                        $forge->addField([
+                            $name => [
+                                'type' => 'INT',
+                                'null' => true
+                            ]
+                        ]);
+                        $type = explode('.', $type);
+                        $forge->addKey($name);
+                        $forge->addForeignKey($name, $type[0], $type[1], 'NO ACTION', 'NO ACTION');
+                    }
                 } else {
                     $forge->addField([
                         $name => [
